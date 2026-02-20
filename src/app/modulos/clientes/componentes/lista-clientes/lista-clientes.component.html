@@ -39,7 +39,7 @@
         <p>El sistema valida que no se repita cédula o correo electrónico.</p>
         <span class="info">La validación ocurre al guardar o editar un cliente</span>
       </div>
-      <div class="funcion-card">
+      <div class="funcion-card" *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'administrador'">
         <h3>Visualizar Historial</h3>
         <p>Consulta las reparaciones previas asociadas a un cliente. (Administrador)</p>
         <span class="info">Usa el botón <b>Historial</b> en la lista</span>
