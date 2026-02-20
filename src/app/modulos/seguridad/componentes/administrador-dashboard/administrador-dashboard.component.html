@@ -1,0 +1,213 @@
+<!-- VISTA: Dashboard Administrador
+ Panel de control para administradores con gestión completa de usuarios
+-->
+
+<div class="admin-dashboard">
+  <!-- ENCABEZADO -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Panel de Administrador</h1>
+      <p class="welcome-text">Bienvenido, {{ usuarioActual?.nombre }} {{ usuarioActual?.apellido }}</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="admin-content">
+    <!-- SECCIÓN: Gestión de Usuarios -->
+    <section class="usuarios-section">
+      <div class="section-header">
+        <h2>Gestión de Usuarios</h2>
+        <button class="btn-primary" (click)="abrirFormularioNuevo()" *ngIf="!mostrarFormularioNuevo && !mostrarFormularioEdicion">
+          + Nuevo Usuario
+        </button>
+      </div>
+
+      <!-- BARRA DE BÚSQUEDA -->
+      <div class="search-bar">
+        <input 
+          type="text" 
+          placeholder="Buscar por nombre, apellido o usuario..."
+          [(ngModel)]="criterioBusqueda"
+          (input)="buscarUsuarios()"
+          class="search-input"
+        >
+      </div>
+
+      <!-- MENSAJES DE ÉXITO Y ERROR -->
+      <div class="alert alert-success" *ngIf="mensajeExito">
+        ✓ {{ mensajeExito }}
+      </div>
+      <div class="alert alert-error" *ngIf="mensajeError">
+        ✗ {{ mensajeError }}
+      </div>
+
+      <!-- FORMULARIO: Crear/Editar Usuario -->
+      <div class="form-container" *ngIf="mostrarFormularioNuevo || mostrarFormularioEdicion">
+        <h3>{{ mostrarFormularioNuevo ? 'Crear Nuevo Usuario' : 'Editar Usuario' }}</h3>
+        
+        <form class="user-form" (ngSubmit)="guardarUsuario()">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="nombre">Nombre</label>
+              <input 
+                id="nombre"
+                type="text" 
+                [(ngModel)]="formularioUsuario.nombre"
+                name="nombre"
+                placeholder="Ingresa el nombre"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="apellido">Apellido</label>
+              <input 
+                id="apellido"
+                type="text" 
+                [(ngModel)]="formularioUsuario.apellido"
+                name="apellido"
+                placeholder="Ingresa el apellido"
+                class="form-input"
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input 
+                id="email"
+                type="email" 
+                [(ngModel)]="formularioUsuario.email"
+                name="email"
+                placeholder="usuario@ejemplo.com"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="nombreUsuario">Nombre de Usuario</label>
+              <input 
+                id="nombreUsuario"
+                type="text" 
+                [(ngModel)]="formularioUsuario.nombreUsuario"
+                name="nombreUsuario"
+                placeholder="nombreusuario"
+                class="form-input"
+              >
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="contrasena">
+                Contraseña
+                <span class="hint" *ngIf="mostrarFormularioEdicion">(Dejar en blanco para no cambiar)</span>
+              </label>
+              <input 
+                id="contrasena"
+                type="password" 
+                [(ngModel)]="formularioUsuario.contrasena"
+                name="contrasena"
+                placeholder="Ingresa contraseña"
+                class="form-input"
+              >
+            </div>
+            
+            <div class="form-group">
+              <label for="rol">Rol</label>
+              <select 
+                id="rol"
+                [(ngModel)]="formularioUsuario.rolId"
+                name="rolId"
+                class="form-input"
+              >
+                <option value="">Selecciona un rol</option>
+                <option value="1">Administrador</option>
+                <option value="2">Recepcionista</option>
+                <option value="3">Técnico</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group checkbox-group">
+              <label>
+                <input 
+                  type="checkbox" 
+                  [(ngModel)]="formularioUsuario.activo"
+                  name="activo"
+                >
+                Usuario activo
+              </label>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-success">Guardar Usuario</button>
+            <button type="button" class="btn-secondary" (click)="cerrarFormularios()">Cancelar</button>
+          </div>
+        </form>
+      </div>
+
+      <!-- TABLA: Listado de Usuarios -->
+      <div class="users-table-container" *ngIf="!mostrarFormularioNuevo && !mostrarFormularioEdicion">
+        <table class="users-table" *ngIf="usuariosFiltrados.length > 0">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Usuario</th>
+              <th>Rol</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let usuario of usuariosFiltrados" [class.usuario-inactivo]="!usuario.activo">
+              <td>{{ usuario.nombre }} {{ usuario.apellido }}</td>
+              <td>{{ usuario.email }}</td>
+              <td><strong>{{ usuario.usuario }}</strong></td>
+              <td>
+                <span class="rol-badge" [ngClass]="'rol-' + usuario.rol.tipo">
+                  {{ usuario.rol.nombre }}
+                </span>
+              </td>
+              <td>
+                <span class="status" [ngClass]="usuario.activo ? 'activo' : 'inactivo'">
+                  {{ usuario.activo ? '✓ Activo' : '✗ Inactivo' }}
+                </span>
+              </td>
+              <td class="table-actions">
+                <button class="btn-edit" (click)="abrirFormularioEdicion(usuario)" [disabled]="!usuario.activo">
+                  Editar
+                </button>
+                <button class="btn-reset" (click)="resetearContrasena(usuario)" [disabled]="!usuario.activo">
+                  Reset Contraseña
+                </button>
+                <button class="btn-delete" (click)="desactivarUsuario(usuario)" [disabled]="!usuario.activo">
+                  Desactivar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="no-users" *ngIf="usuariosFiltrados.length === 0">
+          <p>No hay usuarios que coincidan con tu búsqueda</p>
+        </div>
+      </div>
+
+      <!-- INFO: Total de usuarios -->
+      <div class="users-info">
+        <p>Total de usuarios: <strong>{{ todosLosUsuarios.length }}</strong> | 
+           Activos: <strong>{{ usuariosActivos }}</strong> |
+           Inactivos: <strong>{{ usuariosInactivos }}</strong>
+        </p>
+      </div>
+    </section>
+  </main>
+</div>

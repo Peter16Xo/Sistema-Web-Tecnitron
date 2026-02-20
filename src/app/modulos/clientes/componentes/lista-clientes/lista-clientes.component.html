@@ -1,0 +1,111 @@
+<div class="container">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-content">
+      <div class="titulo-seccion">
+        <h1>Gestión de Clientes</h1>
+        <p>Base de datos completa de clientes</p>
+      </div>
+      <button class="btn btn-primary" (click)="nuevoCliente()">+ Nuevo Cliente</button>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- ALERTAS -->
+    <div *ngIf="mensajeExito" class="alert alert-success">
+      {{ mensajeExito }}
+    </div>
+    <div *ngIf="mensajeError" class="alert alert-error">
+      {{ mensajeError }}
+    </div>
+
+    <!-- BARRA DE BÚSQUEDA Y FILTROS -->
+    <section class="busqueda-seccion">
+      <div class="busqueda-container">
+        <input
+          type="text"
+          class="input-busqueda"
+          placeholder="Buscar por nombre, email o teléfono..."
+          [(ngModel)]="criterioBusqueda"
+          (input)="buscar()"
+        />
+        <button class="btn btn-secondary" (click)="limpiarBusqueda()">Limpiar</button>
+      </div>
+
+      <div class="filtros">
+        <label class="checkbox-grupo">
+          <input type="checkbox" [checked]="mostrarActivos" (change)="alternarActivos()" />
+          <span>Activos ({{ clientesActivos }})</span>
+        </label>
+        <label class="checkbox-grupo">
+          <input type="checkbox" [checked]="mostrarInactivos" (change)="alternarInactivos()" />
+          <span>Inactivos ({{ clientesInactivos }})</span>
+        </label>
+      </div>
+    </section>
+
+    <!-- TABLA DE CLIENTES -->
+    <section class="tabla-seccion">
+      <div *ngIf="cargandoClientes" class="spinner"></div>
+
+      <div *ngIf="!cargandoClientes && clientesFiltrados.length === 0" class="vacio">
+        <p>No hay clientes que coincidan con tu búsqueda</p>
+      </div>
+
+      <div *ngIf="!cargandoClientes && clientesFiltrados.length > 0" class="tabla-responsive">
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Ciudad</th>
+              <th>Órdenes</th>
+              <th>Estado</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let cliente of clientesFiltrados" [class.inactivo]="!cliente.activo">
+              <td class="nombre">{{ cliente.nombre }} {{ cliente.apellido }}</td>
+              <td class="email">{{ cliente.email }}</td>
+              <td class="telefono">{{ cliente.telefono }}</td>
+              <td class="ciudad">{{ cliente.ciudad || '-' }}</td>
+              <td class="ordenes">{{ cliente.numeroOrdenes || 0 }}</td>
+              <td class="estado">
+                <span [ngClass]="cliente.activo ? 'badge-activo' : 'badge-inactivo'">
+                  {{ cliente.activo ? '✓ Activo' : '✗ Inactivo' }}
+                </span>
+              </td>
+              <td class="acciones">
+                <button
+                  class="btn btn-chico btn-editar"
+                  (click)="editarCliente(cliente.id)"
+                  [disabled]="!cliente.activo"
+                >
+                  Editar
+                </button>
+                <button
+                  class="btn btn-chico btn-desactivar"
+                  (click)="desactivarCliente(cliente.id)"
+                  *ngIf="cliente.activo"
+                >
+                  Desactivar
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- ESTADÍSTICAS -->
+      <div class="estadisticas">
+        <p>
+          Total de clientes: <strong>{{ totalClientes }}</strong> |
+          Activos: <strong>{{ clientesActivos }}</strong> |
+          Inactivos: <strong>{{ clientesInactivos }}</strong>
+        </p>
+      </div>
+    </section>
+  </main>
+</div>

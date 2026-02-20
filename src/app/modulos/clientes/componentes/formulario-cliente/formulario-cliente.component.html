@@ -1,0 +1,193 @@
+<div class="container">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-content">
+      <h1>{{ esNuevo ? 'Nuevo Cliente' : 'Editar Cliente' }}</h1>
+      <p>{{ esNuevo ? 'Registra un nuevo cliente en el sistema' : 'Actualiza la información del cliente' }}</p>
+    </div>
+  </header>
+
+  <main class="main-content">
+    <!-- ALERTAS -->
+    <div *ngIf="mensajeExito" class="alert alert-success">
+      {{ mensajeExito }}
+    </div>
+    <div *ngIf="mensajeError" class="alert alert-error">
+      {{ mensajeError }}
+    </div>
+
+    <!-- FORMULARIO -->
+    <div class="formulario-card">
+      <form (ngSubmit)="guardarCliente()">
+        <!-- ROW 1: Cédula, Nombre y Apellido -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="cedula">Cédula *</label>
+            <input
+              type="text"
+              id="cedula"
+              class="form-input"
+              [(ngModel)]="formularioCliente.cedula"
+              name="cedula"
+              placeholder="0987654321"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="nombre">Nombre *</label>
+            <input
+              type="text"
+              id="nombre"
+              class="form-input"
+              [(ngModel)]="formularioCliente.nombre"
+              name="nombre"
+              placeholder="Juan"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="apellido">Apellido *</label>
+            <input
+              type="text"
+              id="apellido"
+              class="form-input"
+              [(ngModel)]="formularioCliente.apellido"
+              name="apellido"
+              placeholder="García"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- ROW 2: Email y Teléfono -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input
+              type="email"
+              id="email"
+              class="form-input"
+              [(ngModel)]="formularioCliente.email"
+              name="email"
+              placeholder="juan@email.com"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="telefono">Teléfono *</label>
+            <input
+              type="tel"
+              id="telefono"
+              class="form-input"
+              [(ngModel)]="formularioCliente.telefono"
+              name="telefono"
+              placeholder="0987654321"
+              required
+            />
+          </div>
+        </div>
+
+        <!-- ROW 3: Dirección -->
+        <div class="form-group full-width">
+          <label for="direccion">Dirección *</label>
+          <input
+            type="text"
+            id="direccion"
+            class="form-input"
+            [(ngModel)]="formularioCliente.direccion"
+            name="direccion"
+            placeholder="Calle Principal 123"
+            required
+          />
+        </div>
+
+        <!-- ROW 4: Ciudad, Provincia y Código Postal -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="ciudad">Ciudad</label>
+            <select
+              id="ciudad"
+              class="form-input"
+              [(ngModel)]="formularioCliente.ciudad"
+              name="ciudad"
+            >
+              <option value="">Seleccionar ciudad</option>
+              <option *ngFor="let ciudad of ciudades" [value]="ciudad">
+                {{ ciudad }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="provincia">Provincia</label>
+            <select
+              id="provincia"
+              class="form-input"
+              [(ngModel)]="formularioCliente.provincia"
+              name="provincia"
+            >
+              <option value="">Seleccionar provincia</option>
+              <option *ngFor="let provincia of provincias" [value]="provincia">
+                {{ provincia }}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="codigoPostal">Código Postal</label>
+            <input
+              type="text"
+              id="codigoPostal"
+              class="form-input"
+              [(ngModel)]="formularioCliente.codigoPostal"
+              name="codigoPostal"
+              placeholder="090514"
+            />
+          </div>
+        </div>
+
+        <!-- ROW 5: Notas -->
+        <div class="form-group full-width">
+          <label for="notas">Notas</label>
+          <textarea
+            id="notas"
+            class="form-input"
+            [(ngModel)]="formularioCliente.notas"
+            name="notas"
+            placeholder="Notas adicionales sobre el cliente..."
+            rows="3"
+          ></textarea>
+        </div>
+
+        <!-- ROW 6: Estado (solo para edición) -->
+        <div *ngIf="!esNuevo" class="form-group full-width">
+          <label class="checkbox-grupo">
+            <input
+              type="checkbox"
+              [(ngModel)]="formularioCliente.activo"
+              name="activo"
+            />
+            <span>Cliente Activo</span>
+          </label>
+        </div>
+
+        <!-- BOTONES -->
+        <div class="form-acciones">
+          <button
+            type="submit"
+            class="btn btn-primary"
+            [disabled]="cargando"
+          >
+            {{ cargando ? 'Guardando...' : esNuevo ? 'Crear Cliente' : 'Actualizar Cliente' }}
+          </button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            (click)="cancelar()"
+            [disabled]="cargando"
+          >
+            Cancelar
+          </button>
+        </div>
+      </form>
+    </div>
+  </main>
+</div>

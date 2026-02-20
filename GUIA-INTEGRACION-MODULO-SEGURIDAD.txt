@@ -1,0 +1,229 @@
+/**
+ * GUÍA DE INTEGRACIÓN DEL MÓDULO DE SEGURIDAD
+ * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, 
+ *          Grizlly, Javier
+ * 
+ * Esta guía muestra cómo integrar el módulo de seguridad en la aplicación principal.
+ * 
+ * =============================================================================
+ * PASO 1: ACTUALIZAR app.routes.ts
+ * =============================================================================
+ * 
+ * import { Routes } from '@angular/router';
+ * import { LoginComponent } from './modulos/seguridad/componentes/login/login.component';
+ * 
+ * export const routes: Routes = [
+ *   {
+ *     path: 'login',
+ *     component: LoginComponent
+ *   },
+ *   {
+ *     path: 'seguridad',
+ *     children: [
+ *       {
+ *         path: 'login',
+ *         component: LoginComponent
+ *       }
+ *     ]
+ *   },
+ *   // Otras rutas...
+ *   {
+ *     path: '',
+ *     redirectTo: '/login',
+ *     pathMatch: 'full'
+ *   }
+ * ];
+ * 
+ * =============================================================================
+ * PASO 2: ACTUALIZAR app.component.ts
+ * =============================================================================
+ * 
+ * import { Component } from '@angular/core';
+ * import { CommonModule } from '@angular/common';
+ * import { RouterOutlet } from '@angular/router';
+ * import { LoginComponent } from './modulos/seguridad/componentes/login/login.component';
+ * import { ValidacionRolComponent } from './modulos/seguridad/componentes/validacion-rol/validacion-rol.component';
+ * 
+ * @Component({
+ *   selector: 'app-root',
+ *   standalone: true,
+ *   imports: [CommonModule, RouterOutlet, LoginComponent, ValidacionRolComponent],
+ *   template: `
+ *     <app-login></app-login>
+ *     <app-validacion-rol></app-validacion-rol>
+ *     <router-outlet></router-outlet>
+ *   `,
+ *   styleUrls: ['./app.component.css']
+ * })
+ * export class AppComponent {
+ *   title = 'TECNITRON';
+ * }
+ * 
+ * =============================================================================
+ * PASO 3: USAR EN OTROS COMPONENTES
+ * =============================================================================
+ * 
+ * import { AutenticacionServicio } from '../../servicios/autenticacion.servicio';
+ * 
+ * export class OtroComponente {
+ *   usuarioActual: Usuario | null = null;
+ *   
+ *   constructor(private auth: AutenticacionServicio) {}
+ *   
+ *   ngOnInit() {
+ *     // Obtener usuario actual
+ *     this.usuarioActual = this.auth.obtenerUsuarioActual();
+ *     
+ *     // Suscribirse a cambios
+ *     this.auth.usuarioAutenticado$.subscribe(usuario => {
+ *       this.usuarioActual = usuario;
+ *     });
+ *   }
+ *   
+ *   estaAutenticado(): boolean {
+ *     return this.usuarioActual !== null;
+ *   }
+ * }
+ * 
+ * =============================================================================
+ * PASO 4: CREAR UN GUARD DE AUTENTICACIÓN (RECOMENDADO)
+ * =============================================================================
+ * 
+ * import { Injectable } from '@angular/core';
+ * import { CanActivate, Router } from '@angular/router';
+ * import { AutenticacionServicio } from './servicios/autenticacion.servicio';
+ * 
+ * @Injectable({
+ *   providedIn: 'root'
+ * })
+ * export class GuardAutenticacion implements CanActivate {
+ *   constructor(
+ *     private auth: AutenticacionServicio,
+ *     private router: Router
+ *   ) {}
+ *   
+ *   canActivate(): boolean {
+ *     const usuario = this.auth.obtenerUsuarioActual();
+ *     if (usuario) {
+ *       return true;
+ *     } else {
+ *       this.router.navigate(['/login']);
+ *       return false;
+ *     }
+ *   }
+ * }
+ * 
+ * // Usar en rutas:
+ * {
+ *   path: 'dashboard',
+ *   component: DashboardComponent,
+ *   canActivate: [GuardAutenticacion]
+ * }
+ * 
+ * =============================================================================
+ * PASO 5: CREAR UN GUARD DE ROLES (RECOMENDADO PARA FUTURO)
+ * =============================================================================
+ * 
+ * import { Injectable } from '@angular/core';
+ * import { CanActivate, Router, ActivatedRouteSnapshot } from '@angular/router';
+ * import { AutenticacionServicio } from './servicios/autenticacion.servicio';
+ * 
+ * @Injectable({
+ *   providedIn: 'root'
+ * })
+ * export class GuardRol implements CanActivate {
+ *   constructor(
+ *     private auth: AutenticacionServicio,
+ *     private router: Router
+ *   ) {}
+ *   
+ *   canActivate(route: ActivatedRouteSnapshot): boolean {
+ *     const usuario = this.auth.obtenerUsuarioActual();
+ *     const rolesRequeridos = route.data['roles'] as string[];
+ *     
+ *     if (usuario && rolesRequeridos.includes(usuario.rol.tipo)) {
+ *       return true;
+ *     } else {
+ *       this.router.navigate(['/acceso-denegado']);
+ *       return false;
+ *     }
+ *   }
+ * }
+ * 
+ * // Usar en rutas:
+ * {
+ *   path: 'admin',
+ *   component: AdminComponent,
+ *   canActivate: [GuardRol],
+ *   data: { roles: ['administrador'] }
+ * }
+ * 
+ * =============================================================================
+ * ESTRUCTURA RECOMENDADA DEL PROYECTO FINAL
+ * =============================================================================
+ * 
+ * src/
+ * ├── app/
+ * │   ├── modulos/
+ * │   │   ├── seguridad/         ✓ COMPLETADO
+ * │   │   ├── clientes/          ⏳ PENDIENTE
+ * │   │   ├── inventario/        ⏳ PENDIENTE
+ * │   │   ├── ordenes/           ⏳ PENDIENTE
+ * │   │   ├── facturacion/       ⏳ PENDIENTE
+ * │   │   ├── reportes/          ⏳ PENDIENTE
+ * │   │   └── seguimiento/       ⏭️  ÚLTIMOS
+ * │   │
+ * │   ├── servicios/
+ * │   │   ├── autenticacion.servicio.ts        ✓ COMPLETADO
+ * │   │   ├── usuario.servicio.ts               ✓ COMPLETADO
+ * │   │   ├── datos-simulados.ts                ✓ COMPLETADO
+ * │   │   ├── cliente.servicio.ts              ⏳ PENDIENTE
+ * │   │   ├── inventario.servicio.ts           ⏳ PENDIENTE
+ * │   │   ├── orden.servicio.ts                ⏳ PENDIENTE
+ * │   │   └── factura.servicio.ts              ⏳ PENDIENTE
+ * │   │
+ * │   ├── guards/
+ * │   │   ├── autenticacion.guard.ts           ⏳ PENDIENTE
+ * │   │   └── rol.guard.ts                     ⏳ PENDIENTE
+ * │   │
+ * │   ├── app.routes.ts                        ⏳ PENDIENTE (integración)
+ * │   ├── app.config.ts
+ * │   ├── app.component.ts                     ⏳ PENDIENTE (integración)
+ * │   └── app.component.css
+ * │
+ * ├── index.html
+ * ├── main.ts
+ * ├── styles.css
+ * └── favicon.ico
+ * 
+ * =============================================================================
+ * CONSIDERACIONES DE DISEÑO
+ * =============================================================================
+ * 
+ * 1. El login tiene un diseño moderno con gradientes y animaciones
+ * 2. Los formularios tienen validación en cliente
+ * 3. Las contraseñas se pueden mostrar/ocultar
+ * 4. Hay botones de demostración para cargar credenciales rápidamente
+ * 5. Los mensajes de error son claros y amigables
+ * 6. La sesión persiste en localStorage (24 horas)
+ * 7. Cada rol tiene colores diferenciados para fácil identificación
+ * 8. El componente de validación de rol muestra todos los permisos
+ * 9. El componente de login es standalone (se puede usar en cualquier parte)
+ * 10. Se implementó con Angular reactive patterns (Observables)
+ * 
+ * =============================================================================
+ * PRUEBAS RÁPIDAS
+ * =============================================================================
+ * 
+ * 1. Abrir la aplicación en http://localhost:4200
+ * 2. Ver el formulario de login
+ * 3. Presionar uno de los botones de demostración (Admin, Recepción, Técnico)
+ * 4. Los campos se llenarán automáticamente
+ * 5. Hacer click en "Ingresar"
+ * 6. Ver el mensaje de éxito y la información del usuario
+ * 7. Ver la sección de validación de rol con los permisos
+ * 8. Hacer click en "Cerrar Sesión"
+ * 9. Volver al formulario vacío
+ * 
+ * =============================================================================
+ */

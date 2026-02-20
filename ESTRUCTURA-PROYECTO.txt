@@ -1,0 +1,373 @@
+================================================================================
+ESTRUCTURA DEL PROYECTO - SISTEMA TECNITRON
+================================================================================
+Fecha: 2026-02-20
+Versión: 1.0.0 - Módulo de Seguridad Completado
+
+================================================================================
+ESTRUCTURA DE CARPETAS COMPLETA
+================================================================================
+
+Sistema-Web-Tecnitron/
+│
+├── public/                                     [Carpeta de assets estáticos]
+│
+├── src/
+│   ├── index.html                              [Archivo principal HTML]
+│   ├── main.ts                                 [Punto de entrada de la app]
+│   ├── styles.css                              [Estilos globales]
+│   │
+│   └── app/
+│       │
+│       ├── modulos/                            [Módulos funcionales]
+│       │   │
+│       │   ├── seguridad/                      ✅ COMPLETADO
+│       │   │   ├── modelos/
+│       │   │   │   ├── usuario.modelo.ts       [Define estructura Usuario]
+│       │   │   │   └── rol.modelo.ts           [Define estructura Rol]
+│       │   │   │
+│       │   │   ├── componentes/
+│       │   │   │   ├── login/
+│       │   │   │   │   ├── login.component.ts             [Controlador]
+│       │   │   │   │   ├── login.component.html           [Vista]
+│       │   │   │   │   └── login.component.css            [Estilos]
+│       │   │   │   │
+│       │   │   │   └── validacion-rol/
+│       │   │   │       ├── validacion-rol.component.ts    [Controlador]
+│       │   │   │       ├── validacion-rol.component.html  [Vista]
+│       │   │   │       └── validacion-rol.component.css   [Estilos]
+│       │   │   │
+│       │   │   └── README.md
+│       │   │
+│       │   ├── clientes/                       ⏳ PENDIENTE
+│       │   │   ├── modelos/
+│       │   │   │   └── cliente.modelo.ts
+│       │   │   └── componentes/
+│       │   │       ├── lista-clientes/
+│       │   │       ├── formulario-cliente/
+│       │   │       └── historial-cliente/
+│       │   │
+│       │   ├── inventario/                     ⏳ PENDIENTE
+│       │   │   ├── modelos/
+│       │   │   │   └── articulo.modelo.ts
+│       │   │   └── componentes/
+│       │   │       ├── lista-articulos/
+│       │   │       ├── formulario-articulo/
+│       │   │       └── alertas-stock/
+│       │   │
+│       │   ├── ordenes/                        ⏳ PENDIENTE
+│       │   │   ├── modelos/
+│       │   │   │   └── orden.modelo.ts
+│       │   │   └── componentes/
+│       │   │       ├── lista-ordenes/
+│       │   │       ├── crear-orden/
+│       │   │       └── detalle-orden/
+│       │   │
+│       │   ├── facturacion/                    ⏳ PENDIENTE
+│       │   │   ├── modelos/
+│       │   │   │   └── factura.modelo.ts
+│       │   │   └── componentes/
+│       │   │       ├── lista-facturas/
+│       │   │       ├── generador-facturas/
+│       │   │       └── pagos/
+│       │   │
+│       │   ├── reportes/                       ⏳ PENDIENTE
+│       │   │   ├── modelos/
+│       │   │   │   └── reporte.modelo.ts
+│       │   │   └── componentes/
+│       │   │       ├── reporte-reparaciones/
+│       │   │       ├── reporte-tecnicos/
+│       │   │       └── reporte-ingresos/
+│       │   │
+│       │   └── seguimiento/                    ⏭️  ÚLTIMOS
+│       │       ├── modelos/
+│       │       │   └── seguimiento.modelo.ts
+│       │       └── componentes/
+│       │           └── tracker-tiempo-real/
+│       │
+│       ├── servicios/                          [Servicios reutilizables]
+│       │   ├── datos-simulados.ts              ✅ COMPLETADO [BD en memoria]
+│       │   ├── autenticacion.servicio.ts       ✅ COMPLETADO [Auth]
+│       │   ├── usuario.servicio.ts             ✅ COMPLETADO [CRUD usuarios]
+│       │   ├── cliente.servicio.ts             ⏳ PENDIENTE
+│       │   ├── inventario.servicio.ts          ⏳ PENDIENTE
+│       │   ├── orden.servicio.ts               ⏳ PENDIENTE
+│       │   └── factura.servicio.ts             ⏳ PENDIENTE
+│       │
+│       ├── guards/                             [Protección de rutas]
+│       │   ├── autenticacion.guard.ts          ⏳ PENDIENTE
+│       │   └── rol.guard.ts                    ⏳ PENDIENTE
+│       │
+│       ├── interceptores/                      [Manejo centralizado]
+│       │   ├── error.interceptor.ts            ⏳ PENDIENTE
+│       │   └── autenticacion.interceptor.ts    ⏳ PENDIENTE
+│       │
+│       ├── directivas/                         [Validaciones custom]
+│       │   └── [directivas específicas]        ⏳ PENDIENTE
+│       │
+│       ├── pipes/                              [Transformación de datos]
+│       │   └── [pipes específicos]             ⏳ PENDIENTE
+│       │
+│       ├── utilidades/                         [Funciones útiles]
+│       │   ├── validadores.ts                  ⏳ PENDIENTE
+│       │   ├── constantes.ts                   ⏳ PENDIENTE
+│       │   └── helpers.ts                      ⏳ PENDIENTE
+│       │
+│       ├── app.component.ts                    [Componente principal]
+│       ├── app.component.css                   [Estilos principales]
+│       ├── app.routes.ts                       [Rutas de la app]
+│       └── app.config.ts                       [Configuración]
+│
+├── angular.json                                [Configuración Angular]
+├── package.json                                [Dependencias npm]
+├── tsconfig.json                               [Configuración TypeScript]
+├── tsconfig.app.json                           [TS específico de app]
+├── tsconfig.spec.json                          [TS para tests]
+│
+├── README.md                                   [Documentación principal]
+├── GUIA-INTEGRACION-MODULO-SEGURIDAD.txt      [Integración de seguridad]
+└── RESUMEN-IMPLEMENTACION.txt                  [Este documento]
+
+================================================================================
+ESTADO DE IMPLEMENTACIÓN POR COMPONENTE
+================================================================================
+
+MÓDULO SEGURIDAD (100% COMPLETADO)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Componentes:                                                                │
+│ ✅ LoginComponent                                                           │
+│    └─ Completo con validación, animaciones y diseño responsive             │
+│ ✅ ValidacionRolComponent                                                   │
+│    └─ Muestra información del usuario y permisos                           │
+│                                                                             │
+│ Servicios:                                                                  │
+│ ✅ AutenticacionServicio                                                    │
+│    └─ Maneja login, sesiones y observables                                 │
+│ ✅ UsuarioServicio                                                          │
+│    └─ CRUD completo de usuarios                                            │
+│ ✅ DatosSimulados                                                           │
+│    └─ Base de datos en memoria                                             │
+│                                                                             │
+│ Modelos:                                                                    │
+│ ✅ Usuario (interfaz + SesionUsuario)                                       │
+│ ✅ Rol (interfaz + TipoRol enum)                                            │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MÓDULO CLIENTES (0% COMPLETADO)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Pendiente:                                                                  │
+│ ⏳ Modelo Cliente                                                            │
+│ ⏳ Servicio Cliente                                                          │
+│ ⏳ Componente Lista Clientes                                                │
+│ ⏳ Componente Formulario Cliente                                            │
+│ ⏳ Componente Historial Cliente                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MÓDULO INVENTARIO (0% COMPLETADO)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Pendiente:                                                                  │
+│ ⏳ Modelo Artículo                                                           │
+│ ⏳ Servicio Inventario                                                       │
+│ ⏳ Componente Lista Artículos                                               │
+│ ⏳ Componente Gestión Stock                                                 │
+│ ⏳ Componente Alertas                                                        │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MÓDULO ÓRDENES (0% COMPLETADO)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Pendiente:                                                                  │
+│ ⏳ Modelo Orden                                                              │
+│ ⏳ Servicio Orden                                                            │
+│ ⏳ Componente Crear Orden                                                    │
+│ ⏳ Componente Lista Órdenes                                                  │
+│ ⏳ Componente Detalle Orden                                                  │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MÓDULO FACTURACIÓN (0% COMPLETADO)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Pendiente:                                                                  │
+│ ⏳ Modelo Factura                                                            │
+│ ⏳ Servicio Factura                                                          │
+│ ⏳ Componente Generador Facturas                                            │
+│ ⏳ Componente Historial Facturas                                            │
+│ ⏳ Componente Gestión Pagos                                                 │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MÓDULO REPORTES (0% COMPLETADO)
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Pendiente:                                                                  │
+│ ⏳ Modelo Reporte                                                            │
+│ ⏳ Servicio Reportes                                                         │
+│ ⏳ Componente Reporte Reparaciones                                          │
+│ ⏳ Componente Reporte Técnicos                                              │
+│ ⏳ Componente Reporte Ingresos                                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+MÓDULO SEGUIMIENTO (0% COMPLETADO) - ÚLTIMO
+┌─────────────────────────────────────────────────────────────────────────────┐
+│ Pendiente:                                                                  │
+│ ⏳ Modelo Seguimiento                                                        │
+│ ⏳ Servicio Tracker                                                          │
+│ ⏳ Componente Tracker Tiempo Real                                           │
+│ ⏳ Integración de Correos                                                    │
+│ ⏳ Notificaciones Push                                                       │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+================================================================================
+CARACTERÍSTICAS IMPLEMENTADAS EN SEGURIDAD
+================================================================================
+
+INTERFACE Y USUARIO:
+✓ Formulario de login moderno y responsive
+✓ Validación en cliente con mensajes claros
+✓ Botones de demostración para cargar credenciales
+✓ Mostrar/ocultar contraseña
+✓ Animaciones suaves (deslizar, aparecer)
+✓ Diseño con gradientes y colores modernos
+✓ Soporte: desktop, tablet, mobile
+✓ Indicadores visuales de estado
+
+AUTENTICACIÓN:
+✓ Login con usuario y contraseña
+✓ Validación contra base de datos en memoria
+✓ Creación de sesión con token único
+✓ Cierre de sesión limpio
+✓ Persistencia en localStorage
+✓ Expiración de sesión (24 horas)
+✓ Recuperación de sesión guardada
+✓ Manejo de errores
+
+CONTROL DE ROLES:
+✓ 3 roles predefinidos (Admin, Recepción, Técnico)
+✓ Permisos específicos por rol
+✓ Validación de permisos
+✓ Información detallada de sesión
+✓ Tiempo de conexión en tiempo real
+✓ Token de sesión visible
+
+SEGURIDAD BASE:
+✓ Validación de campos obligatorios
+✓ Longitud mínima de contraseña
+✓ Limpieza de formularios
+✓ Prevención de inyección de código
+✓ Almacenamiento seguro en localStorage
+
+================================================================================
+DATOS Y CONFIGURACIÓN
+================================================================================
+
+ROLES DISPONIBLES:
+1. Administrador (administrador)
+   - 7 permisos de acceso total
+2. Recepcionista (recepcionista)
+   - 4 permisos de gestión parcial
+3. Técnico (tecnico)
+   - 4 permisos de soporte técnico
+
+USUARIOS DE PRUEBA:
+1. admin / admin123 (Administrador Sistema)
+2. recepcion / recep123 (Mary Guzmán - Recepcionista)
+3. tecnico1 / tech123 (Carlos Mendoza - Técnico 1)
+4. tecnico2 / tech123 (Juan Pérez - Técnico 2)
+
+BASE DE DATOS:
+- Tipo: En memoria (arreglos JavaScript)
+- Ubicación: src/app/servicios/datos-simulados.ts
+- Persistencia: localStorage (sesiones activas)
+- Duración: Temporal (se reinicia al recargar)
+
+================================================================================
+PRÓXIMOS PASOS RECOMENDADOS
+================================================================================
+
+INMEDIATO (Próxima sesión):
+1. Crear Módulo de Clientes (modelo, servicio, componentes)
+2. Implementar Guards de autenticación
+3. Configurar rutas protegidas
+4. Crear layout principal con menú
+
+CORTO PLAZO:
+5. Módulo de Inventario
+6. Módulo de Órdenes
+7. Sistema de permisos más granular
+
+MEDIANO PLAZO:
+8. Módulo de Facturación
+9. Módulo de Reportes
+10. Integración con servidor backend
+
+LARGO PLAZO:
+11. Módulo de Seguimiento (Tracker)
+12. Integración de correos
+13. Notificaciones en tiempo real
+14. Deploy a producción
+
+================================================================================
+ESTADÍSTICAS DEL PROYECTO
+================================================================================
+
+Archivos Creados:
+├─ Modelos: 2
+├─ Servicios: 3
+├─ Componentes: 2
+├─ Documentos: 3
+└─ Total: 10 archivos principales
+
+Líneas de Código:
+├─ TypeScript: ~1,500 líneas
+├─ HTML: ~400 líneas
+├─ CSS: ~700 líneas
+└─ Total: ~2,600 líneas de código
+
+Comentarios:
+├─ JSDoc: 40+ métodos documentados
+├─ Comentarios de bloque: 100+
+├─ Comentarios en línea: Extensos
+└─ Documentación externa: 3 archivos
+
+================================================================================
+NOTAS PARA EL EQUIPO DE DESARROLLO
+================================================================================
+
+✓ Se ha mantenido la consistencia de estilos en todo el código
+✓ Todos los nombres están en español (variables, métodos, comentarios)
+✓ Se ha seguido el patrón MVC de forma explícita
+✓ Angular Standalone Components se ha usado correctamente
+✓ RxJS Observables implementados de forma reactiva
+✓ Diseño responsive en todas las pantallas
+✓ Accesibilidad considerada en los formularios
+✓ Validación en cliente implementada
+✓ Manejo de errores con mensajes claros
+
+⚠️  PENDIENTE PARA PRODUCCIÓN:
+- Encriptación de datos sensibles
+- HTTPS y seguridad en tránsito
+- Backend con BD real
+- Autenticación JWT
+- Rate limiting
+- 2FA
+- Logging detallado
+- Tests unitarios y e2e
+
+================================================================================
+CONTACTO Y SOPORTE
+================================================================================
+
+Proyecto: TECNITRON - Sistema de Gestión de Reparaciones Y Servicios Técnicos
+Versión: 1.0.0
+Fecha: 2026-02-20
+
+Autores:
+- Adiel Stalin López Moreno
+- Pedro Andrés Avilés Baque
+- Jonnel
+- Grizlly
+- Javier
+
+Institución: Universidad
+Materia: Elaboración de Proyectos
+Período: 2P 2026
+
+================================================================================
+FIN DEL DOCUMENTO
+================================================================================

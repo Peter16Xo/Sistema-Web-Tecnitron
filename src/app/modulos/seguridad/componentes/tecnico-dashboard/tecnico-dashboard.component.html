@@ -1,0 +1,73 @@
+<!-- VISTA: Dashboard Técnico
+ Panel de control para técnicos
+-->
+
+<div class="tecnico-dashboard">
+  <!-- ENCABEZADO -->
+  <header class="dashboard-header">
+    <div class="header-content">
+      <h1>Panel de Técnico</h1>
+      <p class="welcome-text">Bienvenido, {{ usuarioActual?.nombre }} {{ usuarioActual?.apellido }}</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn-logout" (click)="cerrarSesion()">Cerrar Sesión</button>
+    </div>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="dashboard-content">
+    <div class="welcome-section">
+      <h2>Bienvenido al Sistema TECNITRON</h2>
+      <p>Como técnico de reparación, tienes acceso a las siguientes funciones:</p>
+    </div>
+
+    <!-- TARJETAS DE ESTADÍSTICAS -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon">📋</div>
+        <h3>Órdenes Asignadas</h3>
+        <p class="stat-number">{{ ordenesAsignadas }}</p>
+        <p class="stat-description">Órdenes asignadas para ti</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">⚙️</div>
+        <h3>En Progreso</h3>
+        <p class="stat-number">{{ reparacionesEnProgreso }}</p>
+        <p class="stat-description">Reparaciones actualmente en curso</p>
+      </div>
+
+      <div class="stat-card">
+        <div class="stat-icon">✓</div>
+        <h3>Completadas</h3>
+        <p class="stat-number">{{ ordenesCompletadas }}</p>
+        <p class="stat-description">Reparaciones finalizadas</p>
+      </div>
+    </div>
+
+    <!-- FUNCIONES DISPONIBLES -->
+    <section class="functions-section">
+      <h3>Funciones Disponibles</h3>
+      <ul class="functions-list">
+        <li>✓ Ver órdenes de reparación asignadas</li>
+        <li>✓ Actualizar estado de reparaciones</li>
+        <li>✓ Registrar detalles técnicos del trabajo realizado</li>
+        <li>✓ Crear reportes de reparación</li>
+        <li>✓ Ver historial de reparaciones completadas</li>
+      </ul>
+    </section>
+
+    <!-- MENSAJES -->
+    <section class="info-section">
+      <h3>Instrucciones de Trabajo</h3>
+      <p>Para asegurar un servicio de calidad, por favor:</p>
+      <ol>
+        <li>Revisa las órdenes asignadas al inicio del día</li>
+        <li>Actualiza el estado de cada reparación regularmente</li>
+        <li>Documenta cualquier problema o consideración especial</li>
+        <li>Completa la reparación y marca la orden como finalizada</li>
+        <li>Asegúrate de que la información sea precisa para el seguimiento</li>
+      </ol>
+    </section>
+  </main>
+</div>

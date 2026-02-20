@@ -1,0 +1,126 @@
+<!-- VISTA: LoginComponent -->
+<!-- Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier -->
+<!-- Descripción: Interfaz gráfica del formulario de login para autenticación de usuarios -->
+
+<div class="contenedor-login">
+  <!-- Logo y título del sistema -->
+  <div class="seccion-encabezado">
+    <h1 class="titulo-sistema">🔧 TECNITRON</h1>
+    <p class="subtitulo">Sistema de Gestión Integral de Reparaciones y Servicios Técnicos</p>
+  </div>
+
+  <!-- Caja principal de login -->
+  <div class="caja-login">
+    <!-- Mostrar si ya hay usuario autenticado -->
+    <div *ngIf="usuarioAutenticado" class="seccion-usuario-autenticado">
+      <div class="alerta-exito">
+        <h3>✓ Usuario Autenticado</h3>
+        <p><strong>Nombre:</strong> {{ usuarioAutenticado.nombre }} {{ usuarioAutenticado.apellido }}</p>
+        <p><strong>Email:</strong> {{ usuarioAutenticado.email }}</p>
+        <p><strong>Rol:</strong> <span class="badge-rol" [ngClass]="'rol-' + usuarioAutenticado.rol.tipo">{{ usuarioAutenticado.rol.nombre }}</span></p>
+        <button class="boton-cerrar-sesion" (click)="cerrarSesion()">Cerrar Sesión</button>
+      </div>
+    </div>
+
+    <!-- Mostrar formulario si no hay usuario autenticado -->
+    <form *ngIf="!usuarioAutenticado" (ngSubmit)="enviarFormularioLogin()" class="formulario-login">
+      <h2>Iniciar Sesión</h2>
+
+      <!-- Mensajes de error -->
+      <div *ngIf="mostrarMensajeError" class="alerta-error">
+        <span class="icono-error">×</span>
+        <p>{{ mensajeError }}</p>
+      </div>
+
+      <!-- Mensajes de éxito -->
+      <div *ngIf="mostrarMensajeExito && !usuarioAutenticado" class="alerta-exito">
+        <span class="icono-exito">✓</span>
+        <p>{{ mensajeExito }}</p>
+      </div>
+
+      <!-- Campo de Usuario -->
+      <div class="grupo-campo">
+        <label for="nombreUsuario" class="etiqueta">Nombre de Usuario</label>
+        <input
+          type="text"
+          id="nombreUsuario"
+          class="campo-entrada"
+          [(ngModel)]="nombreUsuario"
+          name="nombreUsuario"
+          placeholder="Ingrese su usuario"
+          autocomplete="username"
+          [disabled]="cargando"
+          maxlength="50">
+        <span class="icono-campo">👤</span>
+      </div>
+
+      <!-- Campo de Contraseña -->
+      <div class="grupo-campo">
+        <label for="contrasena" class="etiqueta">Contraseña</label>
+        <div class="contenedor-contrasena">
+          <input
+            [type]="mostrarContrasena ? 'text' : 'password'"
+            id="contrasena"
+            class="campo-entrada"
+            [(ngModel)]="contrasena"
+            name="contrasena"
+            placeholder="Ingrese su contraseña"
+            autocomplete="current-password"
+            [disabled]="cargando"
+            maxlength="100">
+          <button
+            type="button"
+            class="boton-mostrar-contrasena"
+            (click)="alternarVisibilidadContrasena()"
+            [disabled]="cargando"
+            title="Mostrar/ocultar contraseña">
+            {{ mostrarContrasena ? '👁️' : '🔒' }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Botón de envío -->
+      <button
+        type="submit"
+        class="boton-ingresar"
+        [disabled]="cargando">
+        <span *ngIf="!cargando">Ingresar</span>
+        <span *ngIf="cargando">Verificando... ⏳</span>
+      </button>
+    </form>
+
+    <!-- Sección de credenciales de demostración -->
+    <div class="seccion-demostracion">
+      <p class="texto-demostracion">Credenciales de prueba:</p>
+      <div class="botones-demo">
+        <button
+          type="button"
+          class="boton-demo boton-admin"
+          (click)="cargarCredencialesDemostracion('admin')"
+          title="Cargar credenciales de administrador">
+          Admin
+        </button>
+        <button
+          type="button"
+          class="boton-demo boton-recepcion"
+          (click)="cargarCredencialesDemostracion('recepcion')"
+          title="Cargar credenciales de recepcionista">
+          Recepción
+        </button>
+        <button
+          type="button"
+          class="boton-demo boton-tecnico"
+          (click)="cargarCredencialesDemostracion('tecnico')"
+          title="Cargar credenciales de técnico">
+          Técnico
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pie de página -->
+  <div class="pie-pagina">
+    <p>© 2026 TECNITRON - Sistema de Gestión de Reparaciones</p>
+    <p class="texto-desarrolladores">Proyecto de Ingeniería de Software - Equipo: Adiel, Pedro, Jonnel, Grizlly, Javier</p>
+  </div>
+</div>

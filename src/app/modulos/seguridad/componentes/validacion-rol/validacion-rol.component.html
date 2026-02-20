@@ -1,0 +1,69 @@
+<!-- VISTA: ValidacionRolComponent -->
+<!-- Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier -->
+<!-- Descripción: Interfaz para mostrar información de rol y permisos del usuario -->
+
+<div class="contenedor-validacion-rol">
+  <!-- Mostrar cuando hay sesión activa -->
+  <div *ngIf="estaSesionActiva()" class="panel-informacion-rol">
+    
+    <!-- Encabezado del panel -->
+    <div class="encabezado-panel">
+      <h3>Información de Rol y Sesión</h3>
+      <span class="indicador-activo">● Sesión Activa</span>
+    </div>
+
+    <!-- Información del usuario -->
+    <div class="tarjeta-informacion">
+      <div class="fila-info">
+        <span class="etiqueta">Usuario:</span>
+        <span class="valor">{{ usuarioAutenticado?.nombre }} {{ usuarioAutenticado?.apellido }}</span>
+      </div>
+      <div class="fila-info">
+        <span class="etiqueta">Email:</span>
+        <span class="valor">{{ usuarioAutenticado?.email }}</span>
+      </div>
+      <div class="fila-info">
+        <span class="etiqueta">Rol:</span>
+        <span class="valor badge-rol" [ngClass]="usuarioAutenticado ? 'rol-' + usuarioAutenticado.rol.tipo : ''">
+          {{ obtenerNombreRol() }}
+        </span>
+      </div>
+      <div class="fila-info">
+        <span class="etiqueta">Conectado hace:</span>
+        <span class="valor">{{ tiempoDesdeConexion }}</span>
+      </div>
+      <div class="fila-info">
+        <span class="etiqueta">Token:</span>
+        <span class="valor codigo">{{ obtenerTokenResumido() }}</span>
+      </div>
+    </div>
+
+    <!-- Descripción del rol -->
+    <div class="descripcion-rol">
+      <h4>Descripción del Rol</h4>
+      <p>{{ obtenerDescripcionRol() }}</p>
+    </div>
+
+    <!-- Listado de permisos -->
+    <div class="seccion-permisos">
+      <h4>Permisos Asignados ({{ obtenerPermisos().length }})</h4>
+      <ul class="lista-permisos">
+        <li *ngFor="let permiso of obtenerPermisos()" class="item-permiso">
+          <span class="icono-permiso">✓</span>
+          <span class="nombre-permiso">{{ permiso }}</span>
+          <span class="estado-permiso" [ngClass]="tienePermiso(permiso) ? 'activo' : 'inactivo'">
+            Activo
+          </span>
+        </li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- Mostrar cuando no hay sesión -->
+  <div *ngIf="!estaSesionActiva()" class="alerta-sin-sesion">
+    <span class="icono-alerta">⚠</span>
+    <p>No hay sesión activa. Por favor, inicie sesión primero.</p>
+  </div>
+
+</div>
