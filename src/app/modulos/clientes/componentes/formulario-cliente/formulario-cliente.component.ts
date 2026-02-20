@@ -188,13 +188,49 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Valida cedula y email únicos antes de guardar
+   */
+  private validarUnicidad(): Promise<boolean> {
+    return new Promise((resolve) => {
+      // Validar cédula única
+      this.clienteServicio.validarCedulaUnica(this.formularioCliente.cedula, this.clienteId || undefined)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((cedulaValida: boolean) => {
+          if (!cedulaValida) {
+            this.mensajeError = 'Ya existe un cliente registrado con esta cédula';
+            resolve(false);
+            return;
+          }
+
+          // Validar email único
+          this.clienteServicio.validarEmailUnico(this.formularioCliente.email, this.clienteId || undefined)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((emailValido: boolean) => {
+              if (!emailValido) {
+                this.mensajeError = 'Ya existe un cliente registrado con este correo electrónico';
+                resolve(false);
+                return;
+              }
+              resolve(true);
+            });
+        });
+    });
+  }
+
+  /**
    * Guarda el cliente
    */
-  guardarCliente(): void {
+  async guardarCliente(): Promise<void> {
     this.mensajeError = '';
     this.mensajeExito = '';
 
     if (!this.validarFormulario()) {
+      return;
+    }
+
+    // Validar unicidad de cedula y email
+    const esValido = await this.validarUnicidad();
+    if (!esValido) {
       return;
     }
 

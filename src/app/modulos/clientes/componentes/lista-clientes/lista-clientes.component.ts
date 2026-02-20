@@ -5,15 +5,16 @@
  * Fecha: 2026
  */
 
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { ClienteServicio } from '../../servicios/cliente.servicio';
 import { AutenticacionServicio } from '../../../../servicios/autenticacion.servicio';
 import { Cliente } from '../../modelos/cliente.modelo';
+
 
 @Component({
   selector: 'app-lista-clientes',
@@ -23,7 +24,7 @@ import { Cliente } from '../../modelos/cliente.modelo';
   styleUrls: ['./lista-clientes.component.css']
 })
 export class ListaClientesComponent implements OnInit, OnDestroy {
-  // Control de lifecycle
+  @ViewChild('inputBusqueda') inputBusqueda!: ElementRef<HTMLInputElement>;
   private destroy$ = new Subject<void>();
 
   // Datos de clientes
@@ -45,15 +46,25 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
   mensajeExito = '';
   mensajeError = '';
 
+  usuarioActual: any;
+
   constructor(
     private clienteServicio: ClienteServicio,
     private autenticacionServicio: AutenticacionServicio,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {}
 
   ngOnInit(): void {
-    this.verificarAutenticacion();
+    this.usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
     this.cargarClientes();
+    this.route.queryParams.subscribe(params => {
+      if (params['buscar'] && this.inputBusqueda) {
+        setTimeout(() => {
+          this.inputBusqueda.nativeElement.focus();
+        }, 300);
+      }
+    });
   }
 
   ngOnDestroy(): void {
@@ -61,19 +72,6 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Verifica que el usuario esté autenticado y sea administrador
-   */
-  private verificarAutenticacion(): void {
-    const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
-    if (!usuarioActual || usuarioActual.rol.tipo !== 'administrador') {
-      this.router.navigate(['/dashboard']);
-    }
-  }
-
-  /**
-   * Carga todos los clientes del sistema
-   */
   private cargarClientes(): void {
     this.cargandoClientes = true;
     this.clienteServicio.obtenerTodosLosClientes()
@@ -111,6 +109,7 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
       resultado = resultado.filter(c =>
         c.nombre.toLowerCase().includes(this.criterioBusqueda.toLowerCase()) ||
         c.apellido.toLowerCase().includes(this.criterioBusqueda.toLowerCase()) ||
+        c.cedula.includes(this.criterioBusqueda) ||
         c.email.toLowerCase().includes(this.criterioBusqueda.toLowerCase()) ||
         c.telefono.includes(this.criterioBusqueda)
       );
@@ -174,7 +173,12 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
    * Navega al formulario de edición
    */
   editarCliente(clienteId: string): void {
-    this.router.navigate(['/clientes/editar', clienteId]);
+    // Si es recepcionista, solo puede editar contacto
+    if (this.usuarioActual?.rol?.tipo === 'recepcionista') {
+      this.router.navigate(['/clientes/editar', clienteId], { queryParams: { contacto: 1 } });
+    } else {
+      this.router.navigate(['/clientes/editar', clienteId]);
+    }
   }
 
   /**
@@ -193,4 +197,33 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
     this.mostrarInactivos = false;
     this.aplicarFiltros();
   }
+
+  /**
+   * Visualiza el historial de reparaciones de un cliente
+   */
+  verHistorialCliente(clienteId: string): void {
+    // Solo administrador puede ver historial
+    if (this.usuarioActual?.rol?.tipo !== 'recepcionista') {
+      this.clienteServicio.obtenerClienteConHistorial(clienteId)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe(
+          (clienteConHistorial: any) => {
+            if (clienteConHistorial) {
+              const cliente = this.todosLosClientes.find(c => c.id === clienteId);
+              if (cliente) {
+                alert(`\n                  HISTORIAL DEL CLIENTE - ${cliente.nombre} ${cliente.apellido}\n                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n                  Cédula: ${cliente.cedula}\n                  Email: ${cliente.email}\n                  Teléfono: ${cliente.telefono}\n                  \n                  Órdenes de servicio: ${cliente.numeroOrdenes || 0}\n                  ${cliente.notas ? 'Notas: ' + cliente.notas : ''}\n                  \n                  [Este módulo se integrará con el módulo de Órdenes para mostrar el historial de reparaciones]\n                `);
+              }
+            }
+          }
+        );
+    }
+  }
+
+    /**
+     * Asocia un cliente a una nueva orden (placeholder)
+     */
+    asociarAOrden(cliente: Cliente): void {
+      // Aquí va la lógica para asociar el cliente a una orden
+      alert(`Cliente ${cliente.nombre} ${cliente.apellido} asociado a una nueva orden (demo)`);
+    }
 }

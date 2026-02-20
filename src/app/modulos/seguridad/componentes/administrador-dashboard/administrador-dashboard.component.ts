@@ -22,6 +22,18 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
   styleUrls: ['./administrador-dashboard.component.css']
 })
 export class AdministradorDashboardComponent implements OnInit, OnDestroy {
+    // Métodos de navegación rápida a clientes
+    irAListaClientes() {
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/clientes'], { replaceUrl: true });
+      });
+    }
+
+    irABuscarCliente() {
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/clientes'], { replaceUrl: true });
+      });
+    }
   // PROPIEDADES: Control de usuario autenticado
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;

@@ -48,7 +48,7 @@ export class ClienteServicio {
   }
 
   /**
-   * Busca clientes por criterio (nombre, apellido, email, teléfono)
+   * Busca clientes por criterio (nombre, apellido, email, teléfono, cédula)
    * @param criterio Texto a buscar
    * @returns Observable con clientes coincidentes
    */
@@ -58,9 +58,54 @@ export class ClienteServicio {
       c.nombre.toLowerCase().includes(criterioLower) ||
       c.apellido.toLowerCase().includes(criterioLower) ||
       c.email.toLowerCase().includes(criterioLower) ||
+      c.cedula.includes(criterio) ||
       c.telefono.includes(criterio)
     );
     return of(resultados);
+  }
+
+  /**
+   * Valida que la cédula sea única (no exista otro cliente con la misma cédula)
+   * @param cedula Cédula a validar
+   * @param clienteIdActual ID del cliente actual (para edición, se excluye del validación)
+   * @returns Observable con booleano indicando si es única
+   */
+  public validarCedulaUnica(cedula: string, clienteIdActual?: string): Observable<boolean> {
+    const cedulaExistente = clientesSimulados.find((c: Cliente) => 
+      c.cedula === cedula && c.id !== clienteIdActual
+    );
+    return of(!cedulaExistente);
+  }
+
+  /**
+   * Valida que el email sea único (no exista otro cliente con el mismo email)
+   * @param email Email a validar
+   * @param clienteIdActual ID del cliente actual (para edición, se excluye del validación)
+   * @returns Observable con booleano indicando si es único
+   */
+  public validarEmailUnico(email: string, clienteIdActual?: string): Observable<boolean> {
+    const emailExistente = clientesSimulados.find((c: Cliente) => 
+      c.email.toLowerCase() === email.toLowerCase() && c.id !== clienteIdActual
+    );
+    return of(!emailExistente);
+  }
+
+  /**
+   * Obtiene clientes asociados a un cliente (para historial de reparaciones)
+   * @param clienteId ID del cliente
+   * @returns Observable con información del cliente y sus reparaciones
+   */
+  public obtenerClienteConHistorial(clienteId: string): Observable<any> {
+    const cliente = clientesSimulados.find((c: Cliente) => c.id === clienteId);
+    if (!cliente) {
+      return of(null);
+    }
+    
+    // Retorna cliente con historial de reparaciones (estructura preparada para futuro módulo de órdenes)
+    return of({
+      ...cliente,
+      historialReparaciones: []
+    });
   }
 
   /**

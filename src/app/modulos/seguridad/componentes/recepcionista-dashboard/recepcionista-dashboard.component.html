@@ -16,6 +16,27 @@
 
   <!-- CONTENIDO PRINCIPAL -->
   <main class="dashboard-content">
+        <!-- ACCESOS RÁPIDOS AL MÓDULO CLIENTES -->
+        <section class="clientes-quick-access">
+          <h3>Gestión de Clientes (Recepcionista)</h3>
+          <div class="clientes-funciones-grid">
+            <div class="clientes-funcion-card">
+              <h4>Registrar Cliente</h4>
+              <p>Registra un nuevo cliente al recibir un equipo.</p>
+              <button class="btn-acceso" (click)="irARegistrarCliente()">Registrar Cliente</button>
+            </div>
+            <div class="clientes-funcion-card">
+              <h4>Buscar Cliente</h4>
+              <p>Busca clientes existentes para asociarlos a nuevas órdenes.</p>
+              <button class="btn-acceso" (click)="irABuscarCliente()">Buscar Cliente</button>
+            </div>
+            <div class="clientes-funcion-card">
+              <h4>Editar Cliente</h4>
+              <p>Actualiza la información de contacto del cliente (teléfono, correo, dirección).</p>
+              <span class="info">Usa el botón <b>Editar</b> en la lista de clientes</span>
+            </div>
+          </div>
+        </section>
     <div class="welcome-section">
       <h2>Bienvenido al Sistema TECNITRON</h2>
       <p>Como recepcionista, tienes acceso a las siguientes funciones:</p>

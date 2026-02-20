@@ -11,6 +11,41 @@
   </header>
 
   <main class="main-content">
+
+    <!-- ACCESOS RÁPIDOS Y FUNCIONES DEL MÓDULO -->
+    <section class="funciones-modulo">
+      <div class="funcion-card">
+        <h3>Registrar Cliente</h3>
+        <p>Registra un nuevo cliente al recibir un equipo. (Recepcionista)</p>
+        <button class="btn btn-primary" (click)="nuevoCliente()">Registrar Nuevo Cliente</button>
+      </div>
+      <div class="funcion-card">
+        <h3>Editar Cliente</h3>
+        <p>Actualiza la información de contacto de un cliente registrado. (Recepcionista)</p>
+        <span class="info">Usa el botón <b>Editar</b> en la lista</span>
+      </div>
+      <div class="funcion-card">
+        <h3>Buscar Cliente</h3>
+        <p>Busca clientes por cédula o nombre para asociarlos a órdenes. (Recepcionista)</p>
+        <span class="info">Utiliza la barra de búsqueda</span>
+      </div>
+      <div class="funcion-card">
+        <h3>Listar Clientes</h3>
+        <p>Visualiza la base de datos completa de clientes para auditoría. (Administrador)</p>
+        <span class="info">La tabla muestra todos los clientes registrados</span>
+      </div>
+      <div class="funcion-card">
+        <h3>Validar Cliente Único</h3>
+        <p>El sistema valida que no se repita cédula o correo electrónico.</p>
+        <span class="info">La validación ocurre al guardar o editar un cliente</span>
+      </div>
+      <div class="funcion-card">
+        <h3>Visualizar Historial</h3>
+        <p>Consulta las reparaciones previas asociadas a un cliente. (Administrador)</p>
+        <span class="info">Usa el botón <b>Historial</b> en la lista</span>
+      </div>
+    </section>
+
     <!-- ALERTAS -->
     <div *ngIf="mensajeExito" class="alert alert-success">
       {{ mensajeExito }}
@@ -23,9 +58,10 @@
     <section class="busqueda-seccion">
       <div class="busqueda-container">
         <input
+          #inputBusqueda
           type="text"
           class="input-busqueda"
-          placeholder="Buscar por nombre, email o teléfono..."
+          placeholder="Buscar por cédula, nombre, email o teléfono..."
           [(ngModel)]="criterioBusqueda"
           (input)="buscar()"
         />
@@ -56,6 +92,7 @@
         <table>
           <thead>
             <tr>
+              <th>Cédula</th>
               <th>Nombre</th>
               <th>Email</th>
               <th>Teléfono</th>
@@ -67,6 +104,7 @@
           </thead>
           <tbody>
             <tr *ngFor="let cliente of clientesFiltrados" [class.inactivo]="!cliente.activo">
+              <td class="cedula">{{ cliente.cedula }}</td>
               <td class="nombre">{{ cliente.nombre }} {{ cliente.apellido }}</td>
               <td class="email">{{ cliente.email }}</td>
               <td class="telefono">{{ cliente.telefono }}</td>
@@ -85,10 +123,29 @@
                 >
                   Editar
                 </button>
+                <!-- Solo administrador puede ver historial -->
                 <button
+                  *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'administrador'"
+                  class="btn btn-chico btn-info"
+                  (click)="verHistorialCliente(cliente.id)"
+                  title="Ver historial de reparaciones"
+                >
+                  Historial
+                </button>
+                <!-- Solo recepcionista puede asociar a orden -->
+                <button
+                  *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'recepcionista'"
+                  class="btn btn-chico btn-asociar"
+                  (click)="asociarAOrden(cliente)"
+                  title="Asociar cliente a nueva orden"
+                >
+                  Asociar a Orden
+                </button>
+                <!-- Solo administrador puede desactivar -->
+                <button
+                  *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'administrador' && cliente.activo"
                   class="btn btn-chico btn-desactivar"
                   (click)="desactivarCliente(cliente.id)"
-                  *ngIf="cliente.activo"
                 >
                   Desactivar
                 </button>

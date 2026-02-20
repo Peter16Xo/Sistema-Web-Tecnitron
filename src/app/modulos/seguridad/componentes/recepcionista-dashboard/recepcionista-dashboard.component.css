@@ -1,3 +1,68 @@
+/* ACCESOS RÁPIDOS CLIENTES */
+.clientes-quick-access {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+  padding: 1.5rem 1.2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+.clientes-quick-access h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #4a4a4a;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.clientes-funciones-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+.clientes-funcion-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(102, 126, 234, 0.06);
+  padding: 1rem 1.2rem;
+  min-width: 200px;
+  max-width: 250px;
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+.clientes-funcion-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  color: #4a4a4a;
+  font-weight: 600;
+}
+.clientes-funcion-card p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+.clientes-funcion-card .btn-acceso {
+  margin-top: 0.5rem;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.clientes-funcion-card .btn-acceso:hover {
+  background: #5a67d8;
+}
+.clientes-funcion-card .info {
+  font-size: 0.85rem;
+  color: #888;
+  margin-top: 0.2rem;
+}
 /* ESTILOS: Dashboard Recepcionista */
 
 .recepcionista-dashboard {

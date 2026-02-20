@@ -20,6 +20,24 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
   styleUrls: ['./recepcionista-dashboard.component.css']
 })
 export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
+  // Métodos de navegación rápida a clientes
+  irARegistrarCliente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/clientes/nuevo'], { replaceUrl: true });
+    });
+  }
+
+  irABuscarCliente() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/clientes'], { queryParams: { buscar: 1 }, replaceUrl: true });
+    });
+  }
+
+  irAListaClientes() {
+    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+      this.router.navigate(['/clientes'], { replaceUrl: true });
+    });
+  }
   // PROPIEDADES: Control de usuario autenticado
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;
