@@ -1,3 +1,4 @@
+  // Eliminado bloque duplicado de @Component y clase
 /* CONTROLADOR: Dashboard Administrador
  * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
  * Descripción: Dashboard exclusivo para administradores con gestión completa de usuarios y roles
@@ -35,11 +36,18 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
       });
     }
   // PROPIEDADES: Control de usuario autenticado
-  private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;
   sesionActual: SesionUsuario | null = null;
 
-  // PROPIEDADES: Control de usuarios
+  // Métodos de navegación rápida a inventario
+  irAListarRepuestos() {
+    this.router.navigate(['/inventario/listar-repuestos']);
+  }
+
+  irARegistrarServicio() {
+    this.router.navigate(['/inventario/registrar-servicio']);
+  }
+  private destroy$ = new Subject<void>();
   todosLosUsuarios: Usuario[] = [];
   usuariosFiltrados: Usuario[] = [];
   criterioBusqueda = '';

@@ -1,0 +1,70 @@
+.inventario-dashboard {
+  padding: 2rem;
+}
+.dashboard-header {
+  background: linear-gradient(90deg, #5a6cff 0%, #7f9cff 100%);
+  color: #fff;
+  padding: 1.5rem;
+  border-radius: 8px;
+  margin-bottom: 2rem;
+}
+.header-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.dashboard-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.inventario-funciones-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+.funcion-card {
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+  padding: 1.5rem;
+  min-width: 220px;
+  max-width: 320px;
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  align-items: flex-start;
+}
+.btn-acceso {
+  background: #5a6cff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  margin-bottom: 0.3rem;
+}
+.btn-acceso:hover {
+  background: #3a4cff;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.main-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.funciones-modulo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}

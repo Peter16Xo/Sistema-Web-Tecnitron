@@ -78,14 +78,17 @@ export class LoginComponent implements OnInit {
           
           if (respuesta.exitoso && respuesta.usuario && respuesta.sesion) {
             // Autenticación exitosa
-            this.usuarioAutenticado = respuesta.usuario;
-            this.mostrarMensajeExito = true;
-            this.mensajeExito = respuesta.mensaje;
-            
-            // Redirigir al dashboard después de 1.5 segundos
-            setTimeout(() => {
-              this.router.navigate(['/dashboard']);
-            }, 1500);
+            // Redirigir al dashboard inmediatamente según rol
+            const rolTipo = respuesta.usuario.rol.tipo;
+            let rutaDashboard = '/dashboard';
+            if (rolTipo === 'administrador') {
+              rutaDashboard = '/dashboard/admin';
+            } else if (rolTipo === 'recepcionista') {
+              rutaDashboard = '/dashboard/recepcionista';
+            } else if (rolTipo === 'tecnico') {
+              rutaDashboard = '/dashboard/tecnico';
+            }
+            this.router.navigate([rutaDashboard]);
             
             console.log('Usuario autenticado:', respuesta.usuario);
             console.log('Rol:', respuesta.usuario.rol.nombre);

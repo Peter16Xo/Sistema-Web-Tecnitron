@@ -38,6 +38,12 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
       this.router.navigate(['/clientes'], { replaceUrl: true });
     });
   }
+    // Navegación al catálogo de inventario
+    irACatalogoInventario() {
+      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
+        this.router.navigate(['/inventario/listar-repuestos'], { replaceUrl: true });
+      });
+    }
   // PROPIEDADES: Control de usuario autenticado
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;

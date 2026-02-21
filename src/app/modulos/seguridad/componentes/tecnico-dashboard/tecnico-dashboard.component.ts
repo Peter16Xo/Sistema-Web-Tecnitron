@@ -20,6 +20,9 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
   styleUrls: ['./tecnico-dashboard.component.css']
 })
 export class TecnicoDashboardComponent implements OnInit, OnDestroy {
+    irAListarRepuestos() {
+      this.router.navigate(['/inventario/listar-repuestos']);
+    }
   // PROPIEDADES: Control de usuario autenticado
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;

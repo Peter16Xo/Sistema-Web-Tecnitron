@@ -11,19 +11,9 @@
 
   <!-- Caja principal de login -->
   <div class="caja-login">
-    <!-- Mostrar si ya hay usuario autenticado -->
-    <div *ngIf="usuarioAutenticado" class="seccion-usuario-autenticado">
-      <div class="alerta-exito">
-        <h3>✓ Usuario Autenticado</h3>
-        <p><strong>Nombre:</strong> {{ usuarioAutenticado.nombre }} {{ usuarioAutenticado.apellido }}</p>
-        <p><strong>Email:</strong> {{ usuarioAutenticado.email }}</p>
-        <p><strong>Rol:</strong> <span class="badge-rol" [ngClass]="'rol-' + usuarioAutenticado.rol.tipo">{{ usuarioAutenticado.rol.nombre }}</span></p>
-        <button class="boton-cerrar-sesion" (click)="cerrarSesion()">Cerrar Sesión</button>
-      </div>
-    </div>
+    <!-- Eliminado: Mostrar usuario autenticado -->
 
-    <!-- Mostrar formulario si no hay usuario autenticado -->
-    <form *ngIf="!usuarioAutenticado" (ngSubmit)="enviarFormularioLogin()" class="formulario-login">
+    <form (ngSubmit)="enviarFormularioLogin()" class="formulario-login">
       <h2>Iniciar Sesión</h2>
 
       <!-- Mensajes de error -->

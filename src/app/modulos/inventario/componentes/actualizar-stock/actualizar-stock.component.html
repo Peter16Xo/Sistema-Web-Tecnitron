@@ -1,0 +1,20 @@
+<div class="actualizar-stock">
+  <h2>Actualizar Stock de Repuesto</h2>
+  <form (ngSubmit)="actualizar()" #form="ngForm">
+    <div class="form-group">
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="repuesto.nombre" name="nombre" readonly />
+    </div>
+    <div class="form-group">
+      <label>Stock Actual:</label>
+      <input type="number" [(ngModel)]="repuesto.cantidadActual" name="cantidadActual" readonly />
+    </div>
+    <div class="form-group">
+      <label>Cantidad a Agregar:</label>
+      <input type="number" [(ngModel)]="repuesto.cantidadAgregar" name="cantidadAgregar" min="1" required />
+    </div>
+    <button class="btn-acceso" type="submit">Actualizar Stock</button>
+  </form>
+  <div *ngIf="mensajeExito" class="alert-success">{{ mensajeExito }}</div>
+  <div *ngIf="mensajeError" class="alert-error">{{ mensajeError }}</div>
+</div>

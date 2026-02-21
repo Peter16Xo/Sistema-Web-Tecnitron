@@ -1,0 +1,24 @@
+<div class="registrar-repuesto">
+  <h2>Registrar Nuevo Repuesto</h2>
+  <form (ngSubmit)="registrar()" #form="ngForm">
+    <div class="form-group">
+      <label>Nombre:</label>
+      <input type="text" [(ngModel)]="repuesto.nombre" name="nombre" required />
+    </div>
+    <div class="form-group">
+      <label>Descripción:</label>
+      <input type="text" [(ngModel)]="repuesto.descripcion" name="descripcion" required />
+    </div>
+    <div class="form-group">
+      <label>Cantidad (Stock Inicial):</label>
+      <input type="number" [(ngModel)]="repuesto.cantidad" name="cantidad" min="1" required />
+    </div>
+    <div class="form-group">
+      <label>Precio Unitario:</label>
+      <input type="number" [(ngModel)]="repuesto.precio" name="precio" min="0.01" step="0.01" required />
+    </div>
+    <button class="btn-acceso" type="submit">Registrar Repuesto</button>
+  </form>
+  <div *ngIf="mensajeExito" class="alert-success">{{ mensajeExito }}</div>
+  <div *ngIf="mensajeError" class="alert-error">{{ mensajeError }}</div>
+</div>

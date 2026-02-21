@@ -1,0 +1,18 @@
+<div class="buscar-repuesto">
+  <h2>Buscar Repuesto</h2>
+  <form (ngSubmit)="buscar()" #form="ngForm">
+    <div class="form-group">
+      <label>Buscar por Nombre o Descripción:</label>
+      <input type="text" [(ngModel)]="criterio" name="criterio" required />
+    </div>
+    <button class="btn-acceso" type="submit">Buscar</button>
+  </form>
+  <div class="resultados">
+    <h3>Resultados:</h3>
+    <div *ngFor="let repuesto of resultados" class="resultado-card">
+      <strong>{{ repuesto.nombre }}</strong><br>
+      <span>{{ repuesto.descripcion }}</span><br>
+      <span>Stock: {{ repuesto.stock }}</span> | <span>Precio: ${{ repuesto.precio }}</span>
+    </div>
+  </div>
+</div>

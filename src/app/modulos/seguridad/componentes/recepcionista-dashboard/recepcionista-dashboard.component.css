@@ -246,6 +246,45 @@
   font-size: 15px;
 }
 
+/* ESTILO PARA LA TARJETA DE CATÁLOGO DE INVENTARIO */
+.inventario-quick-access {
+  background: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+  padding: 1.5rem 1.2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.inventario-quick-access h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #4a4a4a;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.inventario-quick-access p {
+  margin: 0 0 0.5rem 0;
+  font-size: 0.95rem;
+  color: #666;
+}
+.inventario-quick-access .btn-acceso {
+  margin-top: 0.5rem;
+  background: #667eea;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 0.5rem 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+.inventario-quick-access .btn-acceso:hover {
+  background: #5a67d8;
+}
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .dashboard-header {

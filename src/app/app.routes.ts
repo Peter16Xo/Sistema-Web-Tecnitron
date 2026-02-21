@@ -9,6 +9,14 @@ import { administradorGuard, recepcionstaGuard, tecnicoGuard } from './modulos/s
 import { ListaClientesComponent } from './modulos/clientes/componentes/lista-clientes/lista-clientes.component';
 import { FormularioClienteComponent } from './modulos/clientes/componentes/formulario-cliente/formulario-cliente.component';
 import { ClientesGuard } from './modulos/clientes/guards/clientes.guard';
+import { InventarioDashboardComponent } from './modulos/inventario/componentes/inventario-dashboard/inventario-dashboard.component';
+import { RegistrarRepuestoComponent } from './modulos/inventario/componentes/registrar-repuesto/registrar-repuesto.component';
+import { EditarRepuestoComponent } from './modulos/inventario/componentes/editar-repuesto/editar-repuesto.component';
+import { ActualizarStockComponent } from './modulos/inventario/componentes/actualizar-stock/actualizar-stock.component';
+import { BuscarRepuestoComponent } from './modulos/inventario/componentes/buscar-repuesto/buscar-repuesto.component';
+import { ListarRepuestosComponent } from './modulos/inventario/componentes/listar-repuestos/listar-repuestos.component';
+import { RegistrarServicioComponent } from './modulos/inventario/componentes/registrar-servicio/registrar-servicio.component';
+import { EliminarRepuestoComponent } from './modulos/inventario/componentes/eliminar-repuesto/eliminar-repuesto.component';
 
 export const routes: Routes = [
   // RUTAS PÚBLICAS
@@ -72,6 +80,53 @@ export const routes: Routes = [
         component: FormularioClienteComponent,
         canActivate: [ClientesGuard],
         data: { title: 'Editar Cliente' }
+      }
+    ]
+  },
+
+  // MÓDULO DE INVENTARIO (PROTEGIDO)
+  {
+    path: 'inventario',
+    children: [
+      {
+        path: '',
+        component: InventarioDashboardComponent,
+        data: { title: 'Inventario' }
+      },
+      {
+        path: 'registrar-repuesto',
+        component: RegistrarRepuestoComponent,
+        data: { title: 'Registrar Repuesto' }
+      },
+      {
+        path: 'editar-repuesto',
+        component: EditarRepuestoComponent,
+        data: { title: 'Editar Repuesto' }
+      },
+      {
+        path: 'actualizar-stock',
+        component: ActualizarStockComponent,
+        data: { title: 'Actualizar Stock' }
+      },
+      {
+        path: 'buscar-repuesto',
+        component: BuscarRepuestoComponent,
+        data: { title: 'Buscar Repuesto' }
+      },
+      {
+        path: 'listar-repuestos',
+        component: ListarRepuestosComponent,
+        data: { title: 'Listar Repuestos' }
+      },
+      {
+        path: 'registrar-servicio',
+        component: RegistrarServicioComponent,
+        data: { title: 'Registrar Servicio' }
+      },
+      {
+        path: 'eliminar-repuesto',
+        component: EliminarRepuestoComponent,
+        data: { title: 'Eliminar Repuesto' }
       }
     ]
   },

@@ -498,3 +498,93 @@ button:disabled {
     padding: 8px;
   }
 }
+
+/* INVENTARIO RÁPIDO */
+.inventario-quick-access {
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.08);
+  padding: 1.5rem 1.2rem;
+  margin-bottom: 2rem;
+  margin-top: 2rem;
+}
+.inventario-quick-access h3 {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  color: #4a4a4a;
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.inventario-funciones-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+.funcion-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(102, 126, 234, 0.06);
+  padding: 1rem 1.2rem;
+  min-width: 200px;
+  max-width: 250px;
+  flex: 1 1 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+.funcion-card h4 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.05rem;
+  color: #4a4a4a;
+  font-weight: 600;
+}
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.btn-acceso {
+  background: #5a6cff;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  text-decoration: none;
+  margin-bottom: 0.3rem;
+}
+.btn-acceso:hover {
+  background: #3a4cff;
+}
+
+/* FUNCIONES DE REPUESTOS */
+.repuestos-funciones-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  margin-top: 1rem;
+}
+.sub-funcion-card {
+  background: #f8f9fa;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(102, 126, 234, 0.06);
+  padding: 1rem 1.2rem;
+  min-width: 180px;
+  max-width: 220px;
+  flex: 1 1 180px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+.sub-funcion-card h5 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1rem;
+  color: #4a4a4a;
+  font-weight: 600;
+}

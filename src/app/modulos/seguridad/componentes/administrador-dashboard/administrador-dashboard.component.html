@@ -27,6 +27,22 @@
             </div>
           </div>
         </section>
+        <!-- ACCESOS RÁPIDOS AL MÓDULO INVENTARIO (ADMINISTRADOR) -->
+        <section class="inventario-quick-access">
+          <h3>Gestión de Inventario (Administrador)</h3>
+          <div class="inventario-funciones-grid">
+            <div class="funcion-card">
+              <h4>Gestión de Repuestos</h4>
+              <p>Gestiona el stock (entradas y salidas), actualiza precios y administra el catálogo de repuestos.</p>
+              <button class="btn-acceso" (click)="irAListarRepuestos()">Ver Repuestos</button>
+            </div>
+            <div class="funcion-card">
+              <h4>Registrar Servicio</h4>
+              <p>Agrega servicios de mano de obra al catálogo para usarlos en órdenes de trabajo.</p>
+              <button class="btn-acceso" (click)="irARegistrarServicio()">Registrar Servicio</button>
+            </div>
+          </div>
+        </section>
     <!-- SECCIÓN: Gestión de Usuarios -->
     <section class="usuarios-section">
       <div class="section-header">
