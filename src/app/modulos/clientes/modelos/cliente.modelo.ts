@@ -1,6 +1,6 @@
 /**
  * MODELO: Cliente
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Interfaz que define la estructura de un cliente en el sistema
  * Fecha: 2026
  */

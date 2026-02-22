@@ -1,6 +1,6 @@
 /**
  * DATOS: Clientes Simulados
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Base de datos simulada de clientes para desarrollo y pruebas
  * Fecha: 2026
  */

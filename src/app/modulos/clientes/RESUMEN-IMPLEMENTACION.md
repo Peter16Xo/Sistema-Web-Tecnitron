@@ -1,6 +1,6 @@
 # RESUMEN IMPLEMENTACIÓN - MÓDULO CLIENTES
 
-**Autores:** Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier  
+**Autores:** Pedro Andrés Avilés Baque, Adiel Stalin López Moreno
 **Fecha:** 20 de Febrero de 2026  
 **Estado:** ✅ Completado
 
@@ -366,10 +366,7 @@ Se incluyen 6 clientes de prueba en `datos-clientes-simulados.ts`:
 ## 📞 Contacto y Soporte
 
 Para preguntas o problemas con el módulo de clientes, contactar a los autores:
-- Adiel Stalin López Moreno
 - Pedro Andrés Avilés Baque
-- Jonnel
-- Grizlly
-- Javier
+- Adiel Stalin López Moreno
 
 **Fecha de última actualización:** 20 de Febrero de 2026

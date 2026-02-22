@@ -358,11 +358,9 @@ Versión: 1.0.0
 Fecha: 2026-02-20
 
 Autores:
-- Adiel Stalin López Moreno
 - Pedro Andrés Avilés Baque
-- Jonnel
-- Grizlly
-- Javier
+- Adiel Stalin López Moreno
+
 
 Institución: Universidad
 Materia: Elaboración de Proyectos

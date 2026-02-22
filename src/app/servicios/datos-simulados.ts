@@ -1,6 +1,6 @@
 /**
  * DATOS SIMULADOS
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Base de datos simulada en memoria con usuarios y roles predefinidos.
  *              Esta información es temporal y se reinicia al recargar la aplicación.
  *              En producción, estos datos vendrían de una base de datos real.

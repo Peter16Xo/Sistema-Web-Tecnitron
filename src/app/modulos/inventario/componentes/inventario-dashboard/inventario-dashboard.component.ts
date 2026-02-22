@@ -1,6 +1,6 @@
 /*
  * COMPONENTE: Inventario Dashboard
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Panel de control para Inventario, muestra funciones según el rol
  * Fecha: 2026
  */

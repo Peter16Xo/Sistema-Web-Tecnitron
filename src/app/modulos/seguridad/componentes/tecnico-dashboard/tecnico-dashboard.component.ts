@@ -1,5 +1,5 @@
 /* CONTROLADOR: Dashboard Técnico
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Dashboard para técnicos con funciones de reparación
  * Fecha: 2026
  */

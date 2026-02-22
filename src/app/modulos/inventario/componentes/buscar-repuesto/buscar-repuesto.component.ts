@@ -1,6 +1,6 @@
 /*
  * COMPONENTE: Buscar Repuesto
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Formulario para buscar repuestos por nombre o descripción
  * Fecha: 2026
  */

@@ -1,6 +1,6 @@
 /**
  * SERVICIO: Autenticación
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Servicio que gestiona la autenticación de usuarios.
  *              Simula validación de credenciales contra base de datos en memoria.
  *              Pertenece a RF-SEG-001: Autenticación de usuarios con roles diferenciados.

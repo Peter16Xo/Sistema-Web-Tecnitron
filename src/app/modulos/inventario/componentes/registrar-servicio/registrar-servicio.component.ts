@@ -1,6 +1,6 @@
 /*
  * COMPONENTE: Registrar Servicio
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Formulario para registrar servicios de mano de obra
  * Fecha: 2026
  */

@@ -1,6 +1,6 @@
 /**
  * SERVICIO: Cliente
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Servicio para gestionar operaciones CRUD de clientes en el sistema
  * Fecha: 2026
  */

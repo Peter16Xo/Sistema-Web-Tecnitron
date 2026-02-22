@@ -1,5 +1,5 @@
 /* CONTROLADOR: Dashboard Principal
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Componente principal que redirige al dashboard apropiado según el rol del usuario
  * Fecha: 2026
  */

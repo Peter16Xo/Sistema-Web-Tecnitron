@@ -1,6 +1,6 @@
 /*
  * COMPONENTE: Editar Repuesto
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Formulario para editar un repuesto existente
  * Fecha: 2026
  */

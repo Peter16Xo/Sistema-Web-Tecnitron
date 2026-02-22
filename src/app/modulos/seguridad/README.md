@@ -2,8 +2,7 @@
  * ===============================================================================
  * MÓDULO DE SEGURIDAD - GUÍA DE IMPLEMENTACIÓN
  * ===============================================================================
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, 
- *          Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Proyecto: Sistema de Gestión Integral de Reparaciones y Servicios Técnicos
  * Taller: TECNITRON
  * Fecha: 2026

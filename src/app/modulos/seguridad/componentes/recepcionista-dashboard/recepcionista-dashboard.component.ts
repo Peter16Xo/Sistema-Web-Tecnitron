@@ -1,5 +1,5 @@
 /* CONTROLADOR: Dashboard Recepcionista
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Dashboard para recepcionistas con funciones de atención al cliente
  * Fecha: 2026
  */

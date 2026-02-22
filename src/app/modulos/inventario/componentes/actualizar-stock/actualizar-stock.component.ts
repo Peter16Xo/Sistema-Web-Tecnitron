@@ -1,6 +1,6 @@
 /*
  * COMPONENTE: Actualizar Stock
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Formulario para actualizar el stock de un repuesto
  * Fecha: 2026
  */

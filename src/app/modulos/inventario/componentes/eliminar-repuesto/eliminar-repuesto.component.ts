@@ -1,6 +1,6 @@
 /*
  * COMPONENTE: Eliminar Repuesto
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Formulario para eliminar o inactivar un repuesto
  * Fecha: 2026
  */

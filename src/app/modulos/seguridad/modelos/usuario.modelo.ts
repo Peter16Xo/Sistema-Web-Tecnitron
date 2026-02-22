@@ -1,6 +1,6 @@
 /**
  * MODELO: Usuario
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Define la estructura de datos para un usuario autenticado en el sistema.
  *              Pertenece a RF-SEG-001: Autenticación de usuarios con validación de credenciales.
  */

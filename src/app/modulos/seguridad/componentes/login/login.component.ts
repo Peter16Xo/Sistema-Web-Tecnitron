@@ -1,6 +1,6 @@
 // CONTROLADOR: LoginComponent
 /**
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Componente principal de autenticación (Login)
  *              Gestiona la validación de credenciales y acceso al sistema.
  *              Pertenece a RF-SEG-001: Autenticación de usuarios con roles diferenciados.

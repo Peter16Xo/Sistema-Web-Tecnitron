@@ -1,6 +1,6 @@
 /**
  * COMPONENTE: Lista Clientes
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque, Adiel Stalin López Moreno
  * Descripción: Visualiza y gestiona la lista completa de clientes para administrador
  * Fecha: 2026
  */

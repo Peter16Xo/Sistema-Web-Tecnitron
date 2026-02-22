@@ -7,11 +7,8 @@
  * Fecha: 2026-02-20
  * 
  * Autores del Proyecto:
- * - Adiel Stalin López Moreno
  * - Pedro Andrés Avilés Baque
- * - Jonnel
- * - Grizlly
- * - Javier
+ * - Adiel Stalin López Moreno
  * 
  * ===============================================================================
  * ESTADO DEL PROYECTO

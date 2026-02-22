@@ -1,6 +1,6 @@
 // CONTROLADOR: ValidacionRolComponent
 /**
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Componente para mostrar información de roles y permisos del usuario autenticado.
  *              Valida el acceso según el rol del usuario.
  *              Pertenece a RF-SEG-001: Validación de roles y permisos.

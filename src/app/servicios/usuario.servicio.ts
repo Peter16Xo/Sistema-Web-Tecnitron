@@ -1,6 +1,6 @@
 /**
  * SERVICIO: Usuario
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Servicio para gestionar operaciones CRUD de usuarios en el sistema.
  *              Incluye búsqueda, actualización y gestión de usuarios.
  */

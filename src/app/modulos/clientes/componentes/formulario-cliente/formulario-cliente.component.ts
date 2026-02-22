@@ -1,6 +1,6 @@
 /**
  * COMPONENTE: Formulario Cliente
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque, Adiel Stalin López Moreno
  * Descripción: Formulario para crear y editar clientes
  * Fecha: 2026
  */

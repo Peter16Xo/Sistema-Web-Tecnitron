@@ -1,6 +1,6 @@
   // Eliminado bloque duplicado de @Component y clase
 /* CONTROLADOR: Dashboard Administrador
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Dashboard exclusivo para administradores con gestión completa de usuarios y roles
  * Fecha: 2026
  */

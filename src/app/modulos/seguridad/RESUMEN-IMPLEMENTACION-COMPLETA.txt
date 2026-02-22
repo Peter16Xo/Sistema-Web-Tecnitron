@@ -1,6 +1,6 @@
 <!-- RESUMEN DE IMPLEMENTACIÓN: MÓDULO DE SEGURIDAD COMPLETO -->
 <!-- Con Dashboards Diferenciados por Rol y Gestión de Usuarios -->
-<!-- Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier -->
+<!-- Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
 <!-- Fecha: Febrero 2026 -->
 
 ================================================================================

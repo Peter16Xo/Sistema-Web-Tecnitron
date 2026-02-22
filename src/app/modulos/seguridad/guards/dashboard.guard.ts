@@ -1,5 +1,5 @@
 /* GUARD: Protección de Dashboard
- * Autores: Adiel Stalin López Moreno, Pedro Andrés Avilés Baque, Jonnel, Grizlly, Javier
+ * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Guard que protege el acceso a los dashboards específicos según el rol
  * Fecha: 2026
  */
