@@ -20,30 +20,26 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
   styleUrls: ['./recepcionista-dashboard.component.css']
 })
 export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
-  // Métodos de navegación rápida a clientes
+  
+  // Métodos de navegación rápida
   irARegistrarCliente() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/clientes/nuevo'], { replaceUrl: true });
-    });
+    // ENVIAMOS EL PARÁMETRO returnToList PARA FORZAR LA SALIDA HACIA LA LISTA
+    this.router.navigate(['/clientes/nuevo'], { queryParams: { returnToList: 'true' } });
   }
 
   irABuscarCliente() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/clientes'], { queryParams: { buscar: 1 }, replaceUrl: true });
-    });
+    this.router.navigate(['/clientes'], { queryParams: { buscar: 1 } });
   }
 
   irAListaClientes() {
-    this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-      this.router.navigate(['/clientes'], { replaceUrl: true });
-    });
+    this.router.navigate(['/clientes']);
   }
-    // Navegación al catálogo de inventario
-    irACatalogoInventario() {
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate(['/inventario/listar-repuestos'], { replaceUrl: true });
-      });
-    }
+  
+  // Navegación al catálogo de inventario
+  irACatalogoInventario() {
+    this.router.navigate(['/inventario/listar-repuestos']);
+  }
+
   // PROPIEDADES: Control de usuario autenticado
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;
@@ -54,27 +50,16 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
   clientesRegistrados = 0;
   serviciosDisponibles = 0;
 
-  /**
-   * Constructor del componente
-   * @param autenticacionServicio Servicio de autenticación
-   * @param router Servicio de enrutamiento
-   */
   constructor(
     private autenticacionServicio: AutenticacionServicio,
     private router: Router
   ) {}
 
-  /**
-   * Inicializa el componente
-   */
   ngOnInit(): void {
     this.verificarAutenticacion();
     this.cargarEstadisticas();
   }
 
-  /**
-   * Verifica que el usuario esté autenticado y sea recepcionista
-   */
   private verificarAutenticacion(): void {
     const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
     const sesionActual = this.autenticacionServicio.obtenerSesionActual();
@@ -87,19 +72,12 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Carga las estadísticas del sistema
-   */
   private cargarEstadisticas(): void {
-    // Aquí se cargarían datos desde servicios
     this.ordenesPendientes = 5;
     this.clientesRegistrados = 24;
     this.serviciosDisponibles = 12;
   }
 
-  /**
-   * Cierra sesión del usuario
-   */
   cerrarSesion(): void {
     if (confirm('¿Está seguro de que desea cerrar sesión?')) {
       this.autenticacionServicio.cerrarSesion();
@@ -107,9 +85,6 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Limpia las suscripciones al destruir el componente
-   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

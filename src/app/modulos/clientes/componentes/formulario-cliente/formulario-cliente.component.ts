@@ -6,7 +6,7 @@
  */
 
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { Subject } from 'rxjs';
@@ -23,69 +23,46 @@ import { Cliente } from '../../modelos/cliente.modelo';
   styleUrls: ['./formulario-cliente.component.css']
 })
 export class FormularioClienteComponent implements OnInit, OnDestroy {
-  // Control de lifecycle
   private destroy$ = new Subject<void>();
 
-  // Control de modo (nuevo/editar)
   esNuevo = true;
   clienteId: string | null = null;
+  esRecepcionista = false;
+  
+  // NUEVO: Bandera para saber si vino directo del dashboard y forzar ida a la lista
+  forzarRegresoALista = false;
 
-  // Datos del cliente
   formularioCliente = {
-    cedula: '',
-    nombre: '',
-    apellido: '',
-    email: '',
-    telefono: '',
-    direccion: '',
-    ciudad: '',
-    provincia: '',
-    codigoPostal: '',
-    activo: true,
-    notas: ''
+    cedula: '', nombre: '', apellido: '', email: '', telefono: '',
+    direccion: '', ciudad: '', provincia: '', codigoPostal: '', activo: true, notas: ''
   };
 
-  // Mensajes
   mensajeExito = '';
   mensajeError = '';
   cargando = false;
 
-  // Ciudades para dropdown
-  ciudades = [
-    'Guayaquil',
-    'Quito',
-    'Cuenca',
-    'Ambato',
-    'Riobamba',
-    'Loja',
-    'Manta',
-    'Portoviejo',
-    'Santo Domingo',
-    'Otra'
-  ];
-
-  provincias = [
-    'Guayas',
-    'Pichincha',
-    'Azuay',
-    'Tungurahua',
-    'Chimborazo',
-    'Loja',
-    'Manabí',
-    'Santa Elena',
-    'Los Ríos',
-    'Cotopaxi'
-  ];
+  ciudades = ['Guayaquil', 'Quito', 'Cuenca', 'Ambato', 'Riobamba', 'Loja', 'Manta', 'Portoviejo', 'Santo Domingo', 'Otra'];
+  provincias = ['Guayas', 'Pichincha', 'Azuay', 'Tungurahua', 'Chimborazo', 'Loja', 'Manabí', 'Santa Elena', 'Los Ríos', 'Cotopaxi'];
 
   constructor(
     private clienteServicio: ClienteServicio,
     private autenticacionServicio: AutenticacionServicio,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private location: Location
   ) {}
 
   ngOnInit(): void {
     this.verificarAutenticacion();
+    
+    const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
+    this.esRecepcionista = usuarioActual?.rol?.tipo === 'recepcionista';
+    
+    // Leemos el parámetro para saber de dónde vino
+    this.route.queryParams.pipe(takeUntil(this.destroy$)).subscribe(params => {
+      this.forzarRegresoALista = params['returnToList'] === 'true';
+    });
+
     this.cargarCliente();
   }
 
@@ -94,9 +71,6 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  /**
-   * Verifica autenticación
-   */
   private verificarAutenticacion(): void {
     const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
     if (!usuarioActual) {
@@ -104,9 +78,6 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Carga datos del cliente si está en modo edición
-   */
   private cargarCliente(): void {
     this.route.params.pipe(takeUntil(this.destroy$)).subscribe(params => {
       if (params['id'] && params['id'] !== 'nuevo') {
@@ -114,42 +85,29 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
         this.clienteId = params['id'];
         this.clienteServicio.obtenerClientePorId(this.clienteId!)
           .pipe(takeUntil(this.destroy$))
-          .subscribe(
-            (cliente: Cliente | null) => {
-              if (cliente) {
-                this.llenarFormulario(cliente);
-              }
+          .subscribe((cliente: Cliente | null) => {
+            if (cliente) {
+              this.llenarFormulario(cliente);
             }
-          );
+          });
       }
     });
   }
 
-  /**
-   * Llena el formulario con datos del cliente
-   */
   private llenarFormulario(cliente: Cliente): void {
     this.formularioCliente = {
-      cedula: cliente.cedula,
-      nombre: cliente.nombre,
-      apellido: cliente.apellido,
-      email: cliente.email,
-      telefono: cliente.telefono,
-      direccion: cliente.direccion,
-      ciudad: cliente.ciudad || '',
-      provincia: cliente.provincia || '',
-      codigoPostal: cliente.codigoPostal || '',
-      activo: cliente.activo,
-      notas: cliente.notas || ''
+      cedula: cliente.cedula, nombre: cliente.nombre, apellido: cliente.apellido,
+      email: cliente.email, telefono: cliente.telefono, direccion: cliente.direccion,
+      ciudad: cliente.ciudad || '', provincia: cliente.provincia || '',
+      codigoPostal: cliente.codigoPostal || '', activo: cliente.activo, notas: cliente.notas || ''
     };
   }
 
-  /**
-   * Valida el formulario
-   */
   private validarFormulario(): boolean {
-    if (!this.formularioCliente.cedula.trim()) {
-      this.mensajeError = 'La cédula es requerida';
+    const regexNumeros = /^\d{10}$/; 
+
+    if (!regexNumeros.test(this.formularioCliente.cedula)) {
+      this.mensajeError = 'La cédula debe contener exactamente 10 dígitos numéricos';
       return false;
     }
     if (!this.formularioCliente.nombre.trim()) {
@@ -160,16 +118,12 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
       this.mensajeError = 'El apellido es requerido';
       return false;
     }
-    if (!this.formularioCliente.email.trim()) {
-      this.mensajeError = 'El email es requerido';
-      return false;
-    }
     if (!this.validarEmail(this.formularioCliente.email)) {
-      this.mensajeError = 'El email no es válido';
+      this.mensajeError = 'El email no es válido o está vacío';
       return false;
     }
-    if (!this.formularioCliente.telefono.trim()) {
-      this.mensajeError = 'El teléfono es requerido';
+    if (!regexNumeros.test(this.formularioCliente.telefono)) {
+      this.mensajeError = 'El teléfono debe contener exactamente 10 dígitos numéricos';
       return false;
     }
     if (!this.formularioCliente.direccion.trim()) {
@@ -179,133 +133,110 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  /**
-   * Valida formato de email
-   */
   private validarEmail(email: string): boolean {
     const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return regex.test(email);
   }
 
-  /**
-   * Valida cedula y email únicos antes de guardar
-   */
   private validarUnicidad(): Promise<boolean> {
     return new Promise((resolve) => {
-      // Validar cédula única
       this.clienteServicio.validarCedulaUnica(this.formularioCliente.cedula, this.clienteId || undefined)
         .pipe(takeUntil(this.destroy$))
         .subscribe((cedulaValida: boolean) => {
           if (!cedulaValida) {
             this.mensajeError = 'Ya existe un cliente registrado con esta cédula';
-            resolve(false);
-            return;
+            resolve(false); return;
           }
 
-          // Validar email único
           this.clienteServicio.validarEmailUnico(this.formularioCliente.email, this.clienteId || undefined)
             .pipe(takeUntil(this.destroy$))
             .subscribe((emailValido: boolean) => {
               if (!emailValido) {
                 this.mensajeError = 'Ya existe un cliente registrado con este correo electrónico';
-                resolve(false);
-                return;
+                resolve(false); return;
               }
-              resolve(true);
+
+              this.clienteServicio.validarTelefonoUnico(this.formularioCliente.telefono, this.clienteId || undefined)
+                .pipe(takeUntil(this.destroy$))
+                .subscribe((telefonoValido: boolean) => {
+                  if (!telefonoValido) {
+                    this.mensajeError = 'Ya existe un cliente registrado con este número de teléfono';
+                    resolve(false); return;
+                  }
+                  resolve(true);
+                });
             });
         });
     });
   }
 
   /**
-   * Guarda el cliente
+   * NUEVO: Lógica unificada para regresar respetando el historial
    */
+  private finalizarYNavegar(): void {
+    if (this.forzarRegresoALista) {
+      // Reemplaza el formulario por la lista en el historial
+      this.router.navigate(['/clientes'], { replaceUrl: true });
+    } else {
+      // Flujo normal (Administrador o navegaciones desde la lista)
+      this.location.back();
+    }
+  }
+
   async guardarCliente(): Promise<void> {
-    this.mensajeError = '';
-    this.mensajeExito = '';
+    this.mensajeError = ''; this.mensajeExito = '';
 
-    if (!this.validarFormulario()) {
-      return;
-    }
-
-    // Validar unicidad de cedula y email
+    if (!this.validarFormulario()) return;
+    
     const esValido = await this.validarUnicidad();
-    if (!esValido) {
-      return;
-    }
+    if (!esValido) return;
 
     this.cargando = true;
 
     if (this.esNuevo) {
-      // Crear nuevo cliente
       const nuevoCliente: Cliente = {
         id: Date.now().toString(),
-        cedula: this.formularioCliente.cedula,
-        nombre: this.formularioCliente.nombre,
-        apellido: this.formularioCliente.apellido,
-        email: this.formularioCliente.email,
-        telefono: this.formularioCliente.telefono,
-        direccion: this.formularioCliente.direccion,
-        ciudad: this.formularioCliente.ciudad || undefined,
-        provincia: this.formularioCliente.provincia || undefined,
-        codigoPostal: this.formularioCliente.codigoPostal || undefined,
-        activo: true,
-        fechaRegistro: new Date(),
-        notas: this.formularioCliente.notas || undefined,
-        numeroOrdenes: 0
+        cedula: this.formularioCliente.cedula, nombre: this.formularioCliente.nombre,
+        apellido: this.formularioCliente.apellido, email: this.formularioCliente.email,
+        telefono: this.formularioCliente.telefono, direccion: this.formularioCliente.direccion,
+        ciudad: this.formularioCliente.ciudad || undefined, provincia: this.formularioCliente.provincia || undefined,
+        codigoPostal: this.formularioCliente.codigoPostal || undefined, activo: true,
+        fechaRegistro: new Date(), notas: this.formularioCliente.notas || undefined, numeroOrdenes: 0
       };
 
       this.clienteServicio.agregarCliente(nuevoCliente)
         .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (exitoso: boolean) => {
-            if (exitoso) {
-              this.mensajeExito = `Cliente "${nuevoCliente.nombre}" creado exitosamente`;
-              setTimeout(() => {
-                this.router.navigate(['/clientes']);
-              }, 1500);
-            }
-            this.cargando = false;
+        .subscribe((exitoso: boolean) => {
+          if (exitoso) {
+            this.mensajeExito = `Cliente "${nuevoCliente.nombre}" creado exitosamente`;
+            setTimeout(() => this.finalizarYNavegar(), 1500);
           }
-        );
+          this.cargando = false;
+        });
     } else {
-      // Actualizar cliente existente
       const clienteActualizado: Cliente = {
         id: this.clienteId!,
-        cedula: this.formularioCliente.cedula,
-        nombre: this.formularioCliente.nombre,
-        apellido: this.formularioCliente.apellido,
-        email: this.formularioCliente.email,
-        telefono: this.formularioCliente.telefono,
-        direccion: this.formularioCliente.direccion,
-        ciudad: this.formularioCliente.ciudad || undefined,
-        provincia: this.formularioCliente.provincia || undefined,
-        codigoPostal: this.formularioCliente.codigoPostal || undefined,
-        activo: this.formularioCliente.activo,
-        fechaRegistro: new Date(),
-        notas: this.formularioCliente.notas || undefined
+        cedula: this.formularioCliente.cedula, nombre: this.formularioCliente.nombre,
+        apellido: this.formularioCliente.apellido, email: this.formularioCliente.email,
+        telefono: this.formularioCliente.telefono, direccion: this.formularioCliente.direccion,
+        ciudad: this.formularioCliente.ciudad || undefined, provincia: this.formularioCliente.provincia || undefined,
+        codigoPostal: this.formularioCliente.codigoPostal || undefined, activo: this.formularioCliente.activo,
+        fechaRegistro: new Date(), notas: this.formularioCliente.notas || undefined
       };
 
       this.clienteServicio.actualizarCliente(clienteActualizado)
         .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (exitoso: boolean) => {
-            if (exitoso) {
-              this.mensajeExito = `Cliente "${clienteActualizado.nombre}" actualizado exitosamente`;
-              setTimeout(() => {
-                this.router.navigate(['/clientes']);
-              }, 1500);
-            }
-            this.cargando = false;
+        .subscribe((exitoso: boolean) => {
+          if (exitoso) {
+            this.mensajeExito = `Cliente "${clienteActualizado.nombre}" actualizado exitosamente`;
+            setTimeout(() => this.finalizarYNavegar(), 1500);
           }
-        );
+          this.cargando = false;
+        });
     }
   }
 
-  /**
-   * Cancela y regresa a la lista
-   */
   cancelar(): void {
-    this.router.navigate(['/clientes']);
+    this.finalizarYNavegar();
   }
 }

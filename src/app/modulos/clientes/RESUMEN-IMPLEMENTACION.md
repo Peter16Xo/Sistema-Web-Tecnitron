@@ -17,8 +17,8 @@
 - ✓ Campos opcionales: Ciudad, Provincia, Código Postal, Notas
 - ✓ Validación de campos requeridos
 - ✓ Validación de formato de email
-- X Generación automática de ID y fecha de registro (Falta)
-- X Redirección a lista de clientes tras guardar (Pero al retroceder se cierra la sesion y me manda al Login principal)
+- ✓ Generación automática de ID y fecha de registro (para el DB)
+- ✓ Redirección a lista de clientes tras guardar 
 
 **Componentes:** `formulario-cliente.component.ts`  
 **Servicio:** `cliente.servicio.ts`

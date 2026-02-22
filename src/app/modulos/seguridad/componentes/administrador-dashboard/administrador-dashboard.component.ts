@@ -1,4 +1,3 @@
-  // Eliminado bloque duplicado de @Component y clase
 /* CONTROLADOR: Dashboard Administrador
  * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Dashboard exclusivo para administradores con gestión completa de usuarios y roles
@@ -23,21 +22,15 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
   styleUrls: ['./administrador-dashboard.component.css']
 })
 export class AdministradorDashboardComponent implements OnInit, OnDestroy {
-    // Métodos de navegación rápida a clientes
-    irAListaClientes() {
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate(['/clientes'], { replaceUrl: true });
-      });
-    }
+  
+  // Métodos de navegación rápida a clientes (CORREGIDOS PATRÓN LIMPIO)
+  irAListaClientes() {
+    this.router.navigate(['/clientes']);
+  }
 
-    irABuscarCliente() {
-      this.router.navigateByUrl('/', { skipLocationChange: true }).then(() => {
-        this.router.navigate(['/clientes'], { replaceUrl: true });
-      });
-    }
-  // PROPIEDADES: Control de usuario autenticado
-  usuarioActual: Usuario | null = null;
-  sesionActual: SesionUsuario | null = null;
+  irABuscarCliente() {
+    this.router.navigate(['/clientes']);
+  }
 
   // Métodos de navegación rápida a inventario
   irAListarRepuestos() {
@@ -47,6 +40,11 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
   irARegistrarServicio() {
     this.router.navigate(['/inventario/registrar-servicio']);
   }
+
+  // PROPIEDADES: Control de usuario autenticado
+  usuarioActual: Usuario | null = null;
+  sesionActual: SesionUsuario | null = null;
+
   private destroy$ = new Subject<void>();
   todosLosUsuarios: Usuario[] = [];
   usuariosFiltrados: Usuario[] = [];

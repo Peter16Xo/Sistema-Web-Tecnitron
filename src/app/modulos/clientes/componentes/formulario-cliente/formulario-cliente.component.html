@@ -1,5 +1,4 @@
 <div class="container">
-  <!-- HEADER -->
   <header class="header">
     <div class="header-content">
       <h1>{{ esNuevo ? 'Nuevo Cliente' : 'Editar Cliente' }}</h1>
@@ -8,7 +7,6 @@
   </header>
 
   <main class="main-content">
-    <!-- ALERTAS -->
     <div *ngIf="mensajeExito" class="alert alert-success">
       {{ mensajeExito }}
     </div>
@@ -16,10 +14,8 @@
       {{ mensajeError }}
     </div>
 
-    <!-- FORMULARIO -->
     <div class="formulario-card">
       <form (ngSubmit)="guardarCliente()">
-        <!-- ROW 1: Cédula, Nombre y Apellido -->
         <div class="form-row">
           <div class="form-group">
             <label for="cedula">Cédula *</label>
@@ -30,6 +26,8 @@
               [(ngModel)]="formularioCliente.cedula"
               name="cedula"
               placeholder="0987654321"
+              maxlength="10"
+              [disabled]="!esNuevo && esRecepcionista"
               required
             />
           </div>
@@ -42,6 +40,7 @@
               [(ngModel)]="formularioCliente.nombre"
               name="nombre"
               placeholder="Juan"
+              [disabled]="!esNuevo && esRecepcionista"
               required
             />
           </div>
@@ -54,12 +53,12 @@
               [(ngModel)]="formularioCliente.apellido"
               name="apellido"
               placeholder="García"
+              [disabled]="!esNuevo && esRecepcionista"
               required
             />
           </div>
         </div>
 
-        <!-- ROW 2: Email y Teléfono -->
         <div class="form-row">
           <div class="form-group">
             <label for="email">Email *</label>
@@ -82,12 +81,12 @@
               [(ngModel)]="formularioCliente.telefono"
               name="telefono"
               placeholder="0987654321"
+              maxlength="10"
               required
             />
           </div>
         </div>
 
-        <!-- ROW 3: Dirección -->
         <div class="form-group full-width">
           <label for="direccion">Dirección *</label>
           <input
@@ -101,7 +100,6 @@
           />
         </div>
 
-        <!-- ROW 4: Ciudad, Provincia y Código Postal -->
         <div class="form-row">
           <div class="form-group">
             <label for="ciudad">Ciudad</label>
@@ -144,7 +142,6 @@
           </div>
         </div>
 
-        <!-- ROW 5: Notas -->
         <div class="form-group full-width">
           <label for="notas">Notas</label>
           <textarea
@@ -157,8 +154,7 @@
           ></textarea>
         </div>
 
-        <!-- ROW 6: Estado (solo para edición) -->
-        <div *ngIf="!esNuevo" class="form-group full-width">
+        <div *ngIf="!esNuevo && !esRecepcionista" class="form-group full-width">
           <label class="checkbox-grupo">
             <input
               type="checkbox"
@@ -169,7 +165,6 @@
           </label>
         </div>
 
-        <!-- BOTONES -->
         <div class="form-acciones">
           <button
             type="submit"

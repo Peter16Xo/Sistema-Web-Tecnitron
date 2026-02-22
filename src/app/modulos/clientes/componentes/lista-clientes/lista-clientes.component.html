@@ -1,5 +1,4 @@
 <div class="container">
-  <!-- HEADER -->
   <header class="header">
     <div class="header-content">
       <div class="titulo-seccion">
@@ -12,7 +11,6 @@
 
   <main class="main-content">
 
-    <!-- ACCESOS RÁPIDOS Y FUNCIONES DEL MÓDULO -->
     <section class="funciones-modulo">
       <div class="funcion-card">
         <h3>Registrar Cliente</h3>
@@ -39,14 +37,13 @@
         <p>El sistema valida que no se repita cédula o correo electrónico.</p>
         <span class="info">La validación ocurre al guardar o editar un cliente</span>
       </div>
-      <div class="funcion-card" *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'administrador'">
+      <div class="funcion-card" *ngIf="esAdministrador">
         <h3>Visualizar Historial</h3>
         <p>Consulta las reparaciones previas asociadas a un cliente. (Administrador)</p>
         <span class="info">Usa el botón <b>Historial</b> en la lista</span>
       </div>
     </section>
 
-    <!-- ALERTAS -->
     <div *ngIf="mensajeExito" class="alert alert-success">
       {{ mensajeExito }}
     </div>
@@ -54,7 +51,6 @@
       {{ mensajeError }}
     </div>
 
-    <!-- BARRA DE BÚSQUEDA Y FILTROS -->
     <section class="busqueda-seccion">
       <div class="busqueda-container">
         <input
@@ -73,14 +69,13 @@
           <input type="checkbox" [checked]="mostrarActivos" (change)="alternarActivos()" />
           <span>Activos ({{ clientesActivos }})</span>
         </label>
-        <label class="checkbox-grupo">
+        <label class="checkbox-grupo" *ngIf="esAdministrador">
           <input type="checkbox" [checked]="mostrarInactivos" (change)="alternarInactivos()" />
           <span>Inactivos ({{ clientesInactivos }})</span>
         </label>
       </div>
     </section>
 
-    <!-- TABLA DE CLIENTES -->
     <section class="tabla-seccion">
       <div *ngIf="cargandoClientes" class="spinner"></div>
 
@@ -98,7 +93,7 @@
               <th>Teléfono</th>
               <th>Ciudad</th>
               <th>Órdenes</th>
-              <th>Estado</th>
+              <th *ngIf="esAdministrador">Estado</th>
               <th>Acciones</th>
             </tr>
           </thead>
@@ -110,11 +105,13 @@
               <td class="telefono">{{ cliente.telefono }}</td>
               <td class="ciudad">{{ cliente.ciudad || '-' }}</td>
               <td class="ordenes">{{ cliente.numeroOrdenes || 0 }}</td>
-              <td class="estado">
+              
+              <td class="estado" *ngIf="esAdministrador">
                 <span [ngClass]="cliente.activo ? 'badge-activo' : 'badge-inactivo'">
                   {{ cliente.activo ? '✓ Activo' : '✗ Inactivo' }}
                 </span>
               </td>
+              
               <td class="acciones">
                 <button
                   class="btn btn-chico btn-editar"
@@ -123,27 +120,27 @@
                 >
                   Editar
                 </button>
-                <!-- Solo administrador puede ver historial -->
+                
                 <button
-                  *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'administrador'"
+                  *ngIf="esAdministrador"
                   class="btn btn-chico btn-info"
                   (click)="verHistorialCliente(cliente.id)"
                   title="Ver historial de reparaciones"
                 >
                   Historial
                 </button>
-                <!-- Solo recepcionista puede asociar a orden -->
+                
                 <button
-                  *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'recepcionista'"
+                  *ngIf="!esAdministrador"
                   class="btn btn-chico btn-asociar"
                   (click)="asociarAOrden(cliente)"
                   title="Asociar cliente a nueva orden"
                 >
                   Asociar a Orden
                 </button>
-                <!-- Solo administrador puede desactivar -->
+                
                 <button
-                  *ngIf="usuarioActual && usuarioActual.rol && usuarioActual.rol.tipo === 'administrador' && cliente.activo"
+                  *ngIf="esAdministrador && cliente.activo"
                   class="btn btn-chico btn-desactivar"
                   (click)="desactivarCliente(cliente.id)"
                 >
@@ -155,12 +152,13 @@
         </table>
       </div>
 
-      <!-- ESTADÍSTICAS -->
       <div class="estadisticas">
         <p>
-          Total de clientes: <strong>{{ totalClientes }}</strong> |
-          Activos: <strong>{{ clientesActivos }}</strong> |
-          Inactivos: <strong>{{ clientesInactivos }}</strong>
+          Total de clientes: <strong>{{ totalClientes }}</strong> 
+          <span *ngIf="esAdministrador">
+            | Activos: <strong>{{ clientesActivos }}</strong> |
+            Inactivos: <strong>{{ clientesInactivos }}</strong>
+          </span>
         </p>
       </div>
     </section>

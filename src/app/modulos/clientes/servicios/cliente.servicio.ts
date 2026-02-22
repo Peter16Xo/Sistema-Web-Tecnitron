@@ -91,6 +91,19 @@ export class ClienteServicio {
   }
 
   /**
+   * Valida que el teléfono sea único (no exista otro cliente con el mismo teléfono)
+   * @param telefono Teléfono a validar
+   * @param clienteIdActual ID del cliente actual (para edición, se excluye de la validación)
+   * @returns Observable con booleano indicando si es único
+   */
+  public validarTelefonoUnico(telefono: string, clienteIdActual?: string): Observable<boolean> {
+    const telefonoExistente = clientesSimulados.find((c: Cliente) => 
+      c.telefono === telefono && c.id !== clienteIdActual
+    );
+    return of(!telefonoExistente);
+  }
+
+  /**
    * Obtiene clientes asociados a un cliente (para historial de reparaciones)
    * @param clienteId ID del cliente
    * @returns Observable con información del cliente y sus reparaciones

@@ -37,6 +37,9 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
   mostrarActivos = true;
   mostrarInactivos = false;
 
+  // Control de Roles
+  esAdministrador = false;
+
   // Estadísticas
   totalClientes = 0;
   clientesActivos = 0;
@@ -57,7 +60,17 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
+    
+    // Identifica si el usuario actual tiene el rol de administrador
+    this.esAdministrador = this.usuarioActual?.rol?.tipo === 'administrador';
+    
+    // Forzar ocultamiento de inactivos si NO es administrador (Recepcionista)
+    if (!this.esAdministrador) {
+      this.mostrarInactivos = false;
+    }
+
     this.cargarClientes();
+    
     this.route.queryParams.subscribe(params => {
       if (params['buscar'] && this.inputBusqueda) {
         setTimeout(() => {
@@ -97,7 +110,7 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
   private aplicarFiltros(): void {
     let resultado = [...this.todosLosClientes];
 
-    // Filtrar por estado (activo/inactivo)
+    // Filtrar por estado (activo/inactivo) - Si es recepcionista, la lógica de ngOnInit mantiene mostrarInactivos en false
     resultado = resultado.filter(c => {
       if (this.mostrarActivos && c.activo) return true;
       if (this.mostrarInactivos && !c.activo) return true;
@@ -173,12 +186,8 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
    * Navega al formulario de edición
    */
   editarCliente(clienteId: string): void {
-    // Si es recepcionista, solo puede editar contacto
-    if (this.usuarioActual?.rol?.tipo === 'recepcionista') {
-      this.router.navigate(['/clientes/editar', clienteId], { queryParams: { contacto: 1 } });
-    } else {
-      this.router.navigate(['/clientes/editar', clienteId]);
-    }
+    // Si es recepcionista, navega a editar (el formulario ya protege los campos)
+    this.router.navigate(['/clientes/editar', clienteId]);
   }
 
   /**
@@ -194,7 +203,14 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
   limpiarBusqueda(): void {
     this.criterioBusqueda = '';
     this.mostrarActivos = true;
-    this.mostrarInactivos = false;
+    
+    // Si no es admin, forzamos a que no vea inactivos al limpiar filtros
+    if (!this.esAdministrador) {
+      this.mostrarInactivos = false;
+    } else {
+      this.mostrarInactivos = false;
+    }
+    
     this.aplicarFiltros();
   }
 
@@ -203,7 +219,7 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
    */
   verHistorialCliente(clienteId: string): void {
     // Solo administrador puede ver historial
-    if (this.usuarioActual?.rol?.tipo !== 'recepcionista') {
+    if (this.esAdministrador) {
       this.clienteServicio.obtenerClienteConHistorial(clienteId)
         .pipe(takeUntil(this.destroy$))
         .subscribe(
