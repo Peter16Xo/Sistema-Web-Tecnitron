@@ -2,7 +2,7 @@
  * SERVICIO: Usuario
  * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
  * Descripción: Servicio para gestionar operaciones CRUD de usuarios en el sistema.
- *              Incluye búsqueda, actualización y gestión de usuarios.
+ * Incluye búsqueda, actualización y gestión de usuarios.
  */
 
 import { Injectable } from '@angular/core';
@@ -38,21 +38,22 @@ export class UsuarioServicio {
   }
 
   /**
-   * Obtiene todos los usuarios activos del sistema
+   * Obtiene todos los usuarios del sistema (Activos e Inactivos)
+   * CORREGIDO: Ya no se filtran solo los activos, permitiendo ver el historial completo
    * @returns Observable con lista de usuarios
    */
   public obtenerTodosLosUsuarios(): Observable<Usuario[]> {
-    return of(usuariosSimulados.filter(u => u.activo));
+    return of([...usuariosSimulados]);
   }
 
   /**
-   * Busca usuarios por criterios
+   * Busca usuarios por criterios (Activos e Inactivos)
    * @param criterio - Texto a buscar
    * @returns Observable con usuarios coincidentes
    */
   public buscarUsuarios(criterio: string): Observable<Usuario[]> {
     const resultados = usuariosSimulados.filter(u => 
-      u.activo && (
+      (
         u.nombre.toLowerCase().includes(criterio.toLowerCase()) ||
         u.apellido.toLowerCase().includes(criterio.toLowerCase()) ||
         u.email.toLowerCase().includes(criterio.toLowerCase()) ||
@@ -68,7 +69,7 @@ export class UsuarioServicio {
    * @returns Observable con usuarios de ese rol
    */
   public obtenerUsuariosPorRol(idRol: string): Observable<Usuario[]> {
-    const usuarios = usuariosSimulados.filter(u => u.activo && u.rol.id === idRol);
+    const usuarios = usuariosSimulados.filter(u => u.rol.id === idRol);
     return of(usuarios);
   }
 
@@ -97,7 +98,7 @@ export class UsuarioServicio {
   }
 
   /**
-   * Desactiva un usuario del sistema
+   * Desactiva un usuario del sistema (Soft Delete)
    * @param id - ID del usuario a desactivar
    * @returns Observable con confirmación
    */

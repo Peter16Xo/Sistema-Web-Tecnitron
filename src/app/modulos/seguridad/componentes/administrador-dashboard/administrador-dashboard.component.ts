@@ -23,7 +23,7 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
 })
 export class AdministradorDashboardComponent implements OnInit, OnDestroy {
   
-  // Métodos de navegación rápida a clientes (CORREGIDOS PATRÓN LIMPIO)
+  // Métodos de navegación rápida
   irAListaClientes() {
     this.router.navigate(['/clientes']);
   }
@@ -32,7 +32,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/clientes']);
   }
 
-  // Métodos de navegación rápida a inventario
   irAListarRepuestos() {
     this.router.navigate(['/inventario/listar-repuestos']);
   }
@@ -49,6 +48,11 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
   todosLosUsuarios: Usuario[] = [];
   usuariosFiltrados: Usuario[] = [];
   criterioBusqueda = '';
+  
+  // NUEVO: Control de filtrados por estado
+  mostrarActivos = true;
+  mostrarInactivos = false;
+
   mostrarFormularioNuevo = false;
   mostrarFormularioEdicion = false;
   usuarioSeleccionado: Usuario | null = null;
@@ -71,29 +75,17 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
   mensajeError = '';
   cargandoUsuarios = false;
 
-  /**
-   * Constructor del componente
-   * @param autenticacionServicio Servicio de autenticación
-   * @param usuarioServicio Servicio de usuarios
-   * @param router Servicio de enrutamiento
-   */
   constructor(
     private autenticacionServicio: AutenticacionServicio,
     private usuarioServicio: UsuarioServicio,
     private router: Router
   ) {}
 
-  /**
-   * Inicializa el componente
-   */
   ngOnInit(): void {
     this.verificarAutenticacion();
     this.cargarUsuarios();
   }
 
-  /**
-   * Verifica que el usuario esté autenticado y sea administrador
-   */
   private verificarAutenticacion(): void {
     const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
     const sesionActual = this.autenticacionServicio.obtenerSesionActual();
@@ -106,9 +98,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Carga todos los usuarios del sistema
-   */
   private cargarUsuarios(): void {
     this.cargandoUsuarios = true;
     this.usuarioServicio.obtenerTodosLosUsuarios()
@@ -116,8 +105,8 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
       .subscribe(
         (usuarios: Usuario[]) => {
           this.todosLosUsuarios = usuarios;
-          this.usuariosFiltrados = [...usuarios];
           this.actualizarContadores();
+          this.aplicarFiltros(); // NUEVO: Aplicar filtros después de cargar
           this.cargandoUsuarios = false;
         },
         (error) => {
@@ -128,38 +117,71 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
       );
   }
 
-  /**
-   * Actualiza los contadores de usuarios activos e inactivos
-   */
   private actualizarContadores(): void {
     this.usuariosActivos = this.todosLosUsuarios.filter(u => u.activo).length;
     this.usuariosInactivos = this.todosLosUsuarios.filter(u => !u.activo).length;
   }
 
   /**
-   * Busca usuarios según el criterio ingresado
+   * NUEVO: Aplica filtros de búsqueda de texto y checkboxes de estado
    */
-  buscarUsuarios(): void {
-    if (!this.criterioBusqueda.trim()) {
-      this.usuariosFiltrados = [...this.todosLosUsuarios];
-    } else {
-      this.usuarioServicio.buscarUsuarios(this.criterioBusqueda)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (usuarios: Usuario[]) => {
-            this.usuariosFiltrados = usuarios;
-          },
-          (error) => {
-            console.error('Error en búsqueda:', error);
-            this.usuariosFiltrados = [];
-          }
-        );
+  private aplicarFiltros(): void {
+    let resultado = [...this.todosLosUsuarios];
+
+    // 1. Filtrar por estado (checkboxes)
+    resultado = resultado.filter(u => {
+      if (this.mostrarActivos && u.activo) return true;
+      if (this.mostrarInactivos && !u.activo) return true;
+      return false;
+    });
+
+    // 2. Filtrar por texto de búsqueda
+    if (this.criterioBusqueda.trim()) {
+      const criterio = this.criterioBusqueda.toLowerCase();
+      resultado = resultado.filter(u =>
+        u.nombre.toLowerCase().includes(criterio) ||
+        u.apellido.toLowerCase().includes(criterio) ||
+        u.email.toLowerCase().includes(criterio) ||
+        u.usuario.toLowerCase().includes(criterio)
+      );
     }
+
+    this.usuariosFiltrados = resultado;
   }
 
   /**
-   * Abre el formulario para crear nuevo usuario
+   * Disparado al escribir en el input de búsqueda
    */
+  buscarUsuarios(): void {
+    this.aplicarFiltros();
+  }
+
+  /**
+   * NUEVO: Alterna checkbox de activos
+   */
+  alternarActivos(): void {
+    this.mostrarActivos = !this.mostrarActivos;
+    this.aplicarFiltros();
+  }
+
+  /**
+   * NUEVO: Alterna checkbox de inactivos
+   */
+  alternarInactivos(): void {
+    this.mostrarInactivos = !this.mostrarInactivos;
+    this.aplicarFiltros();
+  }
+
+  /**
+   * NUEVO: Limpia la búsqueda y resetea filtros
+   */
+  limpiarBusqueda(): void {
+    this.criterioBusqueda = '';
+    this.mostrarActivos = true;
+    this.mostrarInactivos = false;
+    this.aplicarFiltros();
+  }
+
   abrirFormularioNuevo(): void {
     this.mostrarFormularioNuevo = true;
     this.mostrarFormularioEdicion = false;
@@ -168,10 +190,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     this.limpiarMensajes();
   }
 
-  /**
-   * Abre el formulario para editar usuario
-   * @param usuario Usuario a editar
-   */
   abrirFormularioEdicion(usuario: Usuario): void {
     this.mostrarFormularioEdicion = true;
     this.mostrarFormularioNuevo = false;
@@ -188,9 +206,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     this.limpiarMensajes();
   }
 
-  /**
-   * Cierra los formularios
-   */
   cerrarFormularios(): void {
     this.mostrarFormularioNuevo = false;
     this.mostrarFormularioEdicion = false;
@@ -199,15 +214,11 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     this.limpiarMensajes();
   }
 
-  /**
-   * Guarda un nuevo usuario o actualiza uno existente
-   */
   guardarUsuario(): void {
     if (!this.validarFormulario()) return;
 
     try {
       if (this.mostrarFormularioNuevo) {
-        // Crear nuevo usuario
         const nuevoUsuario: Usuario = {
           id: Date.now().toString(),
           nombre: this.formularioUsuario.nombre,
@@ -232,7 +243,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
         this.usuarioServicio.agregarUsuario(nuevoUsuario);
         this.mensajeExito = `Usuario "${nuevoUsuario.usuario}" creado exitosamente`;
       } else if (this.usuarioSeleccionado && this.mostrarFormularioEdicion) {
-        // Actualizar usuario existente
         this.usuarioSeleccionado.nombre = this.formularioUsuario.nombre;
         this.usuarioSeleccionado.apellido = this.formularioUsuario.apellido;
         this.usuarioSeleccionado.email = this.formularioUsuario.email;
@@ -256,22 +266,17 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Desactiva un usuario
-   * @param usuario Usuario a desactivar
-   */
   desactivarUsuario(usuario: Usuario): void {
-    if (confirm(`¿Estás seguro de que deseas desactivar a ${usuario.nombre} ${usuario.apellido}?`)) {
+    const confirmacion = confirm(`¿Estás seguro de que deseas desactivar la cuenta del usuario ${usuario.nombre} ${usuario.apellido}? Ya no podrá iniciar sesión en el sistema.`);
+    
+    if (confirmacion) {
       this.usuarioServicio.desactivarUsuario(usuario.id);
-      this.mensajeExito = `Usuario "${usuario.usuario}" desactivado`;
-      this.cargarUsuarios();
+      this.mensajeExito = `La cuenta de "${usuario.usuario}" ha sido desactivada correctamente.`;
+      this.cargarUsuarios(); 
+      setTimeout(() => this.mensajeExito = '', 3000);
     }
   }
 
-  /**
-   * Reinicia la contraseña de un usuario a una contraseña por defecto
-   * @param usuario Usuario
-   */
   resetearContrasena(usuario: Usuario): void {
     if (confirm(`¿Reiniciar contraseña de ${usuario.nombre} ${usuario.apellido}?`)) {
       usuario.contrasena = 'temporal123';
@@ -280,9 +285,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Valida el formulario de usuario
-   */
   private validarFormulario(): boolean {
     if (!this.formularioUsuario.nombre.trim()) {
       this.mensajeError = 'El nombre es requerido';
@@ -311,10 +313,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     return true;
   }
 
-  /**
-   * Obtiene el nombre del rol según su ID
-   * @param rolId ID del rol
-   */
   private obtenerNombreRol(rolId: string): string {
     const roles: { [key: string]: string } = {
       '1': 'Administrador',
@@ -324,10 +322,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     return roles[rolId] || 'Desconocido';
   }
 
-  /**
-   * Obtiene el tipo de rol según su ID
-   * @param rolId ID del rol
-   */
   private obtenerTipoRol(rolId: string): 'administrador' | 'recepcionista' | 'tecnico' {
     const roles: { [key: string]: 'administrador' | 'recepcionista' | 'tecnico' } = {
       '1': 'administrador',
@@ -337,9 +331,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     return roles[rolId] || 'tecnico';
   }
 
-  /**
-   * Limpia el formulario
-   */
   private limpiarFormulario(): void {
     this.formularioUsuario = {
       nombre: '',
@@ -352,17 +343,11 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     };
   }
 
-  /**
-   * Limpia los mensajes de éxito y error
-   */
   private limpiarMensajes(): void {
     this.mensajeExito = '';
     this.mensajeError = '';
   }
 
-  /**
-   * Cierra sesión del usuario
-   */
   cerrarSesion(): void {
     if (confirm('¿Está seguro de que desea cerrar sesión?')) {
       this.autenticacionServicio.cerrarSesion();
@@ -370,9 +355,6 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Limpia las suscripciones al destruir el componente
-   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();
