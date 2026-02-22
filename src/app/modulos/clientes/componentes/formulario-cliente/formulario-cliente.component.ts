@@ -183,13 +183,26 @@ export class FormularioClienteComponent implements OnInit, OnDestroy {
     }
   }
 
+  /**
+   * Guarda el cliente (con confirmación para edición)
+   */
   async guardarCliente(): Promise<void> {
     this.mensajeError = ''; this.mensajeExito = '';
 
+    // 1. Validar campos obligatorios y formatos
     if (!this.validarFormulario()) return;
     
+    // 2. Validar que no se repitan datos únicos en el sistema
     const esValido = await this.validarUnicidad();
     if (!esValido) return;
+
+    // 3. NUEVO: Mensaje de confirmación exclusivo para cuando se está editando
+    if (!this.esNuevo) {
+      const confirmarCambios = confirm('¿Está seguro de que desea actualizar la información de este cliente?');
+      if (!confirmarCambios) {
+        return; // Si el usuario hace clic en "Cancelar", detenemos el guardado
+      }
+    }
 
     this.cargando = true;
 
