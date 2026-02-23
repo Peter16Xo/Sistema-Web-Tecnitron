@@ -44,6 +44,10 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/ordenes']);
   }
 
+  irASolicitudesRepuestos() {
+    this.router.navigate(['/inventario/listar-repuestos']);
+  }
+
   // PROPIEDADES: Control de usuario autenticado
   usuarioActual: Usuario | null = null;
   sesionActual: SesionUsuario | null = null;

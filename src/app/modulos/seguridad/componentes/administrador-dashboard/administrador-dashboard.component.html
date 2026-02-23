@@ -35,12 +35,19 @@
           <div class="inventario-funciones-grid">
             <div class="funcion-card">
               <h4>Gestión de Repuestos</h4>
-              <p>Gestiona el stock (entradas y salidas), actualiza precios y administra el catálogo de repuestos.</p>
+              <p>Gestiona el stock, actualiza precios y administra el catálogo.</p>
               <button class="btn-acceso" (click)="irAListarRepuestos()">Ver Repuestos</button>
             </div>
+            
+            <div class="funcion-card" style="border-left: 4px solid #ff9800;">
+              <h4>Solicitudes de Técnicos</h4>
+              <p>Revisa la bandeja de repuestos faltantes solicitados por los técnicos.</p>
+              <button class="btn-acceso" (click)="irASolicitudesRepuestos()" style="background: #ff9800;">Ver Solicitudes</button>
+            </div>
+
             <div class="funcion-card">
               <h4>Gestión de Servicios</h4>
-              <p>Administra el catálogo de servicios de mano de obra, precios base y descripciones.</p>
+              <p>Administra el catálogo de servicios de mano de obra y precios base.</p>
               <button class="btn-acceso" (click)="irAListarServicios()">Ver Servicios</button>
             </div>
           </div>

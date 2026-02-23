@@ -58,7 +58,8 @@
             <td>{{ cliente.email }}</td>
             <td>{{ cliente.telefono }}</td>
             <td>{{ cliente.ciudad || '-' }}</td>
-            <td style="text-align: center; font-weight: bold; color: #667eea;">{{ cliente.numeroOrdenes || 0 }}</td>
+            
+            <td style="text-align: center; font-weight: bold; color: #667eea;">{{ cliente.numeroOrdenes }}</td>
             
             <td *ngIf="esAdministrador" style="text-align: center;">
               <span class="status" [ngClass]="cliente.activo ? 'activo' : 'inactivo'">
@@ -71,7 +72,7 @@
               
               <button *ngIf="esAdministrador" class="btn-info" (click)="verHistorialCliente(cliente.id)">Historial</button>
               
-              <button *ngIf="!esAdministrador" class="btn-info" (click)="asociarAOrden(cliente)" [disabled]="!cliente.activo">Asociar</button>
+              <button *ngIf="!esAdministrador" class="btn-info" (click)="asociarAOrden(cliente)" [disabled]="!cliente.activo">+ Nueva Orden</button>
               
               <button *ngIf="esAdministrador" class="btn-delete" (click)="desactivarCliente(cliente.id)" [disabled]="!cliente.activo">Desactivar</button>
             </td>
@@ -94,4 +95,62 @@
     </div>
 
   </section>
+
+  <div class="modal-overlay" *ngIf="modalAbierto">
+    <div class="modal-content">
+      
+      <div class="modal-header">
+        <div>
+          <h3 style="margin: 0; color: #1e3c72;">Historial de Reparaciones</h3>
+          <p style="margin: 5px 0 0 0; color: #666; font-size: 14px;">
+            Cliente: <strong>{{ clienteSeleccionadoHistorial?.nombre }} {{ clienteSeleccionadoHistorial?.apellido }}</strong> (CI: {{ clienteSeleccionadoHistorial?.cedula }})
+          </p>
+        </div>
+        <button class="btn-close" (click)="cerrarModal()">✖</button>
+      </div>
+
+      <div class="modal-body">
+        
+        <table class="history-table" *ngIf="ordenesDelCliente.length > 0">
+          <thead>
+            <tr>
+              <th>Orden</th>
+              <th>Fecha Ingreso</th>
+              <th>Equipo</th>
+              <th>Falla Reportada</th>
+              <th style="text-align: right;">Total Cobrado</th>
+              <th style="text-align: center;">Estado Final</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let ord of ordenesDelCliente" 
+                [ngClass]="{'fila-entregado': ord.estado === 'Entregado', 'fila-cancelado': ord.estado === 'Cancelado'}">
+              
+              <td><strong>{{ ord.codigo }}</strong></td>
+              <td>{{ ord.fechaRecepcion | date:'dd/MM/yyyy' }}</td>
+              <td>{{ ord.equipo.tipo }} {{ ord.equipo.marca }}</td>
+              <td style="max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ ord.diagnostico.fallaReportada }}">
+                {{ ord.diagnostico.fallaReportada }}
+              </td>
+              <td style="text-align: right; font-weight: bold;">
+                <span *ngIf="ord.estado === 'Cancelado'">$0.00</span>
+                <span *ngIf="ord.estado !== 'Cancelado'">${{ ord.total | number:'1.2-2' }}</span>
+              </td>
+              <td style="text-align: center;">
+                <span class="badge-estado" [ngClass]="'estado-' + ord.estado.toLowerCase().replace(' ', '-')">
+                  {{ ord.estado }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="no-users" *ngIf="ordenesDelCliente.length === 0" style="padding: 30px;">
+          <p>Este cliente no tiene órdenes de reparación registradas en el sistema.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </div>

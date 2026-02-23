@@ -7,18 +7,60 @@
   <section class="usuarios-section">
     
     <div class="section-header">
-  <h2>
-    <span *ngIf="rolUsuario === 'administrador'">Gestión de Repuestos</span>
-    
-    <span *ngIf="rolUsuario === 'recepcionista'">Catálogo de Repuestos y Servicios</span>
-    
-    <span *ngIf="rolUsuario === 'tecnico'">Catálogo de Repuestos</span>
-  </h2>
-  
-  <button *ngIf="rolUsuario === 'administrador'" class="btn-primary" (click)="irANuevo()">
-    + Nuevo Repuesto
-  </button>
-</div>
+      <h2>
+        <span *ngIf="rolUsuario === 'administrador'">Gestión de Repuestos</span>
+        <span *ngIf="rolUsuario === 'recepcionista'">Catálogo de Repuestos y Servicios</span>
+        <span *ngIf="rolUsuario === 'tecnico'">Catálogo de Repuestos</span>
+      </h2>
+      <button *ngIf="rolUsuario === 'administrador'" class="btn-primary" (click)="irANuevo()">
+        + Nuevo Repuesto
+      </button>
+    </div>
+
+    <div *ngIf="rolUsuario === 'administrador'" style="margin-bottom: 30px;">
+      <div class="section-header" style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 5px solid #ffc107; margin-bottom: 0;">
+        <h3 style="margin: 0; color: #856404; font-size: 16px;">
+          📥 Bandeja de Solicitudes de Repuestos ({{ solicitudesRepuestos.length }})
+        </h3>
+        <button class="btn-secondary" (click)="verBandejaSolicitudes = !verBandejaSolicitudes">
+          {{ verBandejaSolicitudes ? 'Ocultar Bandeja' : 'Ver Solicitudes' }}
+        </button>
+      </div>
+
+      <div class="users-table-container" *ngIf="verBandejaSolicitudes" style="margin-top: 15px; background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0;">
+        <table class="users-table" *ngIf="solicitudesRepuestos.length > 0">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Repuesto Solicitado</th>
+              <th style="text-align: center;">Cant.</th>
+              <th>Solicitante</th>
+              <th style="text-align: center;">Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let sol of solicitudesRepuestos">
+              <td>{{ sol.fecha | date:'dd/MM/yyyy HH:mm' }}</td>
+              <td><strong style="color: #0056b3;">{{ sol.repuesto }}</strong></td>
+              <td style="text-align: center; color: #d32f2f; font-weight: bold; font-size: 16px;">{{ sol.cantidad }}</td>
+              <td>{{ sol.solicitante }} <br><small style="color: #666;">({{ sol.rol }})</small></td>
+              <td style="text-align: center;">
+                <button class="btn-success" (click)="marcarRevisado(sol.id)" title="Marcar como revisado/comprado" style="padding: 6px 12px;">✔ Listo</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        
+        <div style="margin-top: 15px; text-align: right;" *ngIf="solicitudesRepuestos.length > 0">
+           <button class="btn-danger-strong" (click)="limpiarBandeja()">🗑️ Limpiar Toda la Bandeja</button>
+        </div>
+        
+        <div class="no-users" *ngIf="solicitudesRepuestos.length === 0" style="padding: 15px; background: transparent; border: none;">
+          <p>No hay solicitudes de repuestos pendientes de revisar.</p>
+        </div>
+      </div>
+    </div>
+
 
     <div *ngIf="rolUsuario === 'recepcionista'" style="margin-bottom: 40px;">
       <h3 class="subtitulo-seccion">Mano de Obra / Servicios</h3>
@@ -105,21 +147,17 @@
           <tr *ngFor="let rep of repuestosFiltrados" [class.usuario-inactivo]="!rep.activo">
             <td><strong>{{ rep.nombre }}</strong></td>
             <td>{{ rep.descripcion }}</td>
-            
             <td style="text-align: center;">
               <span [ngClass]="rep.stock <= 5 ? 'stock-bajo' : ''">
                 {{ rep.stock }}
               </span>
             </td>
-            
             <td style="text-align: center;"><strong>${{ rep.precioUnitario | number:'1.2-2' }}</strong></td>
-            
             <td *ngIf="rolUsuario === 'administrador'" style="text-align: center;">
               <span class="status" [ngClass]="rep.activo ? 'activo' : 'inactivo'">
                 {{ rep.activo ? '✓ Activo' : '✗ Inactivo' }}
               </span>
             </td>
-            
             <td class="table-actions" *ngIf="rolUsuario === 'administrador'">
               <button class="btn-edit" (click)="irAEditar(rep.id)" [disabled]="!rep.activo">Editar</button>
               <button class="btn-info" (click)="irAStock(rep.id)" [disabled]="!rep.activo">Stock</button>
@@ -148,32 +186,39 @@
 
   <section class="usuarios-section" *ngIf="rolUsuario === 'tecnico'">
     <div class="section-header" style="border-bottom: none; margin-bottom: 10px;">
-      <h2><span style="color: #667eea;">⚙️</span> Solicitar Asignación a Orden</h2>
+      <h2><span style="color: #ff9800;">🔔</span> Solicitar Repuesto Faltante</h2>
+      <p style="margin: 5px 0 0 0; color: #666; font-size: 14px; font-weight: normal;">Notifica al administrador si necesitas un repuesto que está agotado o no existe en el sistema.</p>
     </div>
     
-    <form (ngSubmit)="solicitarAsignacion()" class="form-row">
-      <div class="form-group">
-        <label>Código de Orden</label>
-        <input type="text" [(ngModel)]="ordenTrabajoSolicitada" name="orden" class="form-input" placeholder="Ej. ORD-001" required>
-      </div>
+    <form (ngSubmit)="solicitarRepuesto()" class="form-row" style="background: #fafafa; padding: 20px; border-radius: 8px; border: 1px solid #eee;">
       
       <div class="form-group" style="flex: 2;">
         <label>Repuesto Requerido</label>
         <select [(ngModel)]="repuestoSolicitado" name="repuesto" class="form-input" required>
-          <option value="" disabled selected>Seleccione un repuesto...</option>
-          <option *ngFor="let rep of todosLosRepuestos" [value]="rep.nombre" [disabled]="!rep.activo || rep.stock === 0">
-            {{ rep.nombre }} (Disponible: {{ rep.stock }})
+          <option value="" disabled selected>-- Seleccione un repuesto agotado --</option>
+          <option *ngFor="let rep of repuestosSinStock" [value]="rep.nombre">
+            {{ rep.nombre }} (Agotado)
+          </option>
+          <option value="OTROS" style="font-weight: bold; color: #1e3c72; background: #e0f0ff;">
+            + OTROS (No está en la lista)
           </option>
         </select>
       </div>
+
+      <div class="form-group" style="flex: 2;" *ngIf="repuestoSolicitado === 'OTROS'">
+        <label>Especifique el Repuesto *</label>
+        <input type="text" [(ngModel)]="otroRepuesto" name="otro" class="form-input" placeholder="Ej. Pantalla iPhone 13 Pro" required>
+      </div>
       
-      <div class="form-group">
-        <label>Cantidad</label>
+      <div class="form-group" style="flex: 0.5;">
+        <label>Cant.</label>
         <input type="number" [(ngModel)]="cantidadSolicitada" name="cantidad" min="1" class="form-input" placeholder="1" required>
       </div>
       
       <div class="form-group btn-align" style="flex: 0;">
-        <button type="submit" class="btn-primary" style="padding: 11px 24px; white-space: nowrap;">Confirmar Solicitud</button>
+        <button type="submit" class="btn-primary" style="padding: 11px 24px; white-space: nowrap; background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);">
+          Enviar Solicitud
+        </button>
       </div>
     </form>
   </section>

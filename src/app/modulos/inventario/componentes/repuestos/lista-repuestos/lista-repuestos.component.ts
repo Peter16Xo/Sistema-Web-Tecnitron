@@ -25,6 +25,7 @@ export class ListaRepuestosComponent implements OnInit, OnDestroy {
   // Datos Repuestos
   todosLosRepuestos: Repuesto[] = [];
   repuestosFiltrados: Repuesto[] = [];
+  repuestosSinStock: Repuesto[] = []; // NUEVO: Para el select del técnico
   criterioBusquedaRepuestos = '';
   
   // Datos Servicios
@@ -40,10 +41,14 @@ export class ListaRepuestosComponent implements OnInit, OnDestroy {
   
   mensajeExito = '';
 
-  // Solicitud Técnico
-  ordenTrabajoSolicitada = '';
+  // NUEVO: Variables para la Solicitud de Repuestos
   repuestoSolicitado = '';
+  otroRepuesto = ''; // Cuando selecciona "OTROS"
   cantidadSolicitada: number | null = null;
+  
+  // NUEVO: Bandeja del Administrador
+  solicitudesRepuestos: any[] = [];
+  verBandejaSolicitudes = false;
 
   constructor(
     private router: Router,
@@ -56,27 +61,32 @@ export class ListaRepuestosComponent implements OnInit, OnDestroy {
     const usuario = this.autenticacionServicio.obtenerUsuarioActual();
     this.rolUsuario = usuario ? usuario.rol?.tipo : null;
     
-    // Si NO es admin, forzamos a que solo vea Activos siempre
     if (this.rolUsuario !== 'administrador') {
       this.mostrarInactivos = false;
     }
 
     this.cargarDatos();
+    
+    // Cargamos las solicitudes guardadas (Simulación de DB con LocalStorage)
+    if (this.rolUsuario === 'administrador' || this.rolUsuario === 'tecnico') {
+      this.cargarSolicitudes();
+    }
   }
 
   private cargarDatos(): void {
-    // Cargar Repuestos
     this.repuestoServicio.obtenerTodosLosRepuestos().pipe(takeUntil(this.destroy$)).subscribe(repuestos => {
         this.todosLosRepuestos = repuestos;
         this.actualizarContadores();
         this.aplicarFiltrosRepuestos();
+        
+        // Extraemos solo los que están en Stock 0 para el select del Técnico
+        this.repuestosSinStock = repuestos.filter(r => r.stock === 0 && r.activo);
       });
 
-    // Cargar Servicios (Solo activos para la recepcionista)
     if (this.rolUsuario === 'recepcionista') {
       this.serviciosServicio.obtenerTodosLosServicios().pipe(takeUntil(this.destroy$)).subscribe(servicios => {
           this.serviciosCatalogo = servicios.filter(s => s.activo);
-          this.serviciosFiltrados = [...this.serviciosCatalogo]; // Iniciar lista
+          this.serviciosFiltrados = [...this.serviciosCatalogo];
         });
     }
   }
@@ -86,16 +96,13 @@ export class ListaRepuestosComponent implements OnInit, OnDestroy {
     this.repuestosInactivos = this.todosLosRepuestos.filter(r => !r.activo).length;
   }
 
-  // --- LÓGICA DE REPUESTOS ---
   aplicarFiltrosRepuestos(): void {
     let resultado = [...this.todosLosRepuestos];
-    
     resultado = resultado.filter(r => {
       if (this.mostrarActivos && r.activo) return true;
       if (this.mostrarInactivos && !r.activo) return true;
       return false;
     });
-
     if (this.criterioBusquedaRepuestos.trim()) {
       const crit = this.criterioBusquedaRepuestos.toLowerCase();
       resultado = resultado.filter(r => r.nombre.toLowerCase().includes(crit) || r.descripcion.toLowerCase().includes(crit));
@@ -105,35 +112,22 @@ export class ListaRepuestosComponent implements OnInit, OnDestroy {
 
   limpiarBusquedaRepuestos(): void { 
     this.criterioBusquedaRepuestos = ''; 
-    if(this.rolUsuario === 'administrador') {
-      this.mostrarActivos = true; 
-      this.mostrarInactivos = false; 
-    }
+    if(this.rolUsuario === 'administrador') { this.mostrarActivos = true; this.mostrarInactivos = false; }
     this.aplicarFiltrosRepuestos(); 
   }
-
   alternarActivos(): void { this.mostrarActivos = !this.mostrarActivos; this.aplicarFiltrosRepuestos(); }
   alternarInactivos(): void { this.mostrarInactivos = !this.mostrarInactivos; this.aplicarFiltrosRepuestos(); }
 
-  // --- LÓGICA DE SERVICIOS ---
   aplicarFiltrosServicios(): void {
     if (this.criterioBusquedaServicios.trim()) {
       const crit = this.criterioBusquedaServicios.toLowerCase();
-      this.serviciosFiltrados = this.serviciosCatalogo.filter(s => 
-        s.nombre.toLowerCase().includes(crit) || 
-        s.descripcion.toLowerCase().includes(crit)
-      );
+      this.serviciosFiltrados = this.serviciosCatalogo.filter(s => s.nombre.toLowerCase().includes(crit) || s.descripcion.toLowerCase().includes(crit));
     } else {
       this.serviciosFiltrados = [...this.serviciosCatalogo];
     }
   }
+  limpiarBusquedaServicios(): void { this.criterioBusquedaServicios = ''; this.aplicarFiltrosServicios(); }
 
-  limpiarBusquedaServicios(): void {
-    this.criterioBusquedaServicios = '';
-    this.aplicarFiltrosServicios();
-  }
-
-  // --- ACCIONES ---
   irANuevo(): void { this.router.navigate(['/inventario/repuestos/nuevo']); }
   irAEditar(id: string): void { this.router.navigate(['/inventario/repuestos/editar', id], { queryParams: { modo: 'editar' } }); }
   irAStock(id: string): void { this.router.navigate(['/inventario/repuestos/editar', id], { queryParams: { modo: 'stock' } }); }
@@ -150,13 +144,54 @@ export class ListaRepuestosComponent implements OnInit, OnDestroy {
     }
   }
 
-  solicitarAsignacion(): void {
-    if (!this.ordenTrabajoSolicitada || !this.repuestoSolicitado || !this.cantidadSolicitada) {
-      alert('Completa todos los campos para la solicitud.'); return;
+  // ==========================================
+  // LÓGICA DE SOLICITUDES DE REPUESTOS
+  // ==========================================
+  
+  cargarSolicitudes(): void {
+    const data = localStorage.getItem('tecnitron_solicitudes_repuestos');
+    this.solicitudesRepuestos = data ? JSON.parse(data) : [];
+  }
+
+  solicitarRepuesto(): void {
+    if (!this.repuestoSolicitado || !this.cantidadSolicitada) return;
+    if (this.repuestoSolicitado === 'OTROS' && !this.otroRepuesto.trim()) return;
+
+    // Determinar nombre real
+    const nombreFinal = this.repuestoSolicitado === 'OTROS' ? this.otroRepuesto : this.repuestoSolicitado;
+    const usuario = this.autenticacionServicio.obtenerUsuarioActual();
+
+    const nuevaSolicitud = {
+      id: Date.now().toString(),
+      repuesto: nombreFinal,
+      cantidad: this.cantidadSolicitada,
+      solicitante: `${usuario?.nombre} ${usuario?.apellido}`,
+      rol: usuario?.rol?.nombre || 'Técnico',
+      fecha: new Date()
+    };
+
+    this.solicitudesRepuestos.push(nuevaSolicitud);
+    localStorage.setItem('tecnitron_solicitudes_repuestos', JSON.stringify(this.solicitudesRepuestos));
+
+    this.mensajeExito = `Solicitud de ${this.cantidadSolicitada} unid. de '${nombreFinal}' enviada al administrador.`;
+    setTimeout(() => this.mensajeExito = '', 5000);
+    
+    // Limpiar formulario
+    this.repuestoSolicitado = '';
+    this.otroRepuesto = '';
+    this.cantidadSolicitada = null;
+  }
+
+  marcarRevisado(id: string): void {
+    this.solicitudesRepuestos = this.solicitudesRepuestos.filter(s => s.id !== id);
+    localStorage.setItem('tecnitron_solicitudes_repuestos', JSON.stringify(this.solicitudesRepuestos));
+  }
+
+  limpiarBandeja(): void {
+    if (confirm('¿Estás seguro de eliminar TODAS las solicitudes de la bandeja?')) {
+      this.solicitudesRepuestos = [];
+      localStorage.setItem('tecnitron_solicitudes_repuestos', JSON.stringify([]));
     }
-    this.mensajeExito = `Se solicitaron ${this.cantidadSolicitada} unid. de '${this.repuestoSolicitado}' para la Orden '${this.ordenTrabajoSolicitada}'.`;
-    setTimeout(() => this.mensajeExito = '', 4000);
-    this.ordenTrabajoSolicitada = ''; this.repuestoSolicitado = ''; this.cantidadSolicitada = null;
   }
 
   ngOnDestroy(): void { this.destroy$.next(); this.destroy$.complete(); }

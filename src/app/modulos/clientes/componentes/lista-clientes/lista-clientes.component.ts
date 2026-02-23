@@ -1,7 +1,7 @@
 /**
  * COMPONENTE: Lista Clientes
  * Autores: Pedro Andrés Avilés Baque, Adiel Stalin López Moreno
- * Descripción: Visualiza y gestiona la lista completa de clientes para administrador
+ * Descripción: Visualiza y gestiona la lista completa de clientes y su historial.
  * Fecha: 2026
  */
 
@@ -15,6 +15,8 @@ import { ClienteServicio } from '../../servicios/cliente.servicio';
 import { AutenticacionServicio } from '../../../../servicios/autenticacion.servicio';
 import { Cliente } from '../../modelos/cliente.modelo';
 
+import { OrdenTrabajo } from '../../../ordenes/modelos/orden.modelo';
+import { OrdenServicio } from '../../../ordenes/servicios/orden.service';
 
 @Component({
   selector: 'app-lista-clientes',
@@ -30,14 +32,14 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
   // Datos de clientes
   todosLosClientes: Cliente[] = [];
   clientesFiltrados: Cliente[] = [];
+  todasLasOrdenes: OrdenTrabajo[] = []; // Guardamos las órdenes para cruzarlas
+  
   criterioBusqueda = '';
   cargandoClientes = false;
 
   // Control de filtrados
   mostrarActivos = true;
   mostrarInactivos = false;
-
-  // Control de Roles
   esAdministrador = false;
 
   // Estadísticas
@@ -49,10 +51,16 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
   mensajeExito = '';
   mensajeError = '';
 
+  // CONTROL DEL MODAL DE HISTORIAL
+  modalAbierto = false;
+  clienteSeleccionadoHistorial: Cliente | null = null;
+  ordenesDelCliente: OrdenTrabajo[] = [];
+
   usuarioActual: any;
 
   constructor(
     private clienteServicio: ClienteServicio,
+    private ordenServicio: OrdenServicio, // INYECTAMOS EL SERVICIO DE ÓRDENES
     private autenticacionServicio: AutenticacionServicio,
     private router: Router,
     private route: ActivatedRoute
@@ -60,186 +68,135 @@ export class ListaClientesComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
-    
-    // Identifica si el usuario actual tiene el rol de administrador
     this.esAdministrador = this.usuarioActual?.rol?.tipo === 'administrador';
     
-    // Forzar ocultamiento de inactivos si NO es administrador (Recepcionista)
     if (!this.esAdministrador) {
       this.mostrarInactivos = false;
     }
 
-    this.cargarClientes();
+    this.cargarClientesYOrdenes(); // Cargamos ambos
     
     this.route.queryParams.subscribe(params => {
       if (params['buscar'] && this.inputBusqueda) {
-        setTimeout(() => {
-          this.inputBusqueda.nativeElement.focus();
-        }, 300);
+        setTimeout(() => this.inputBusqueda.nativeElement.focus(), 300);
       }
     });
   }
 
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  private cargarClientes(): void {
-    this.cargandoClientes = true;
-    this.clienteServicio.obtenerTodosLosClientes()
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(
-        (clientes: Cliente[]) => {
-          this.todosLosClientes = clientes;
-          this.aplicarFiltros();
-          this.actualizarEstadisticas();
-          this.cargandoClientes = false;
-        },
-        (error) => {
-          console.error('Error al cargar clientes:', error);
-          this.mensajeError = 'Error al cargar los clientes';
-          this.cargandoClientes = false;
-        }
-      );
-  }
-
   /**
-   * Aplica filtros de búsqueda y estado
+   * Carga clientes y órdenes para cruzar datos y contar
    */
+  private cargarClientesYOrdenes(): void {
+    this.cargandoClientes = true;
+
+    // 1. Obtener todas las órdenes
+    this.ordenServicio.obtenerTodasLasOrdenes().pipe(takeUntil(this.destroy$)).subscribe(ordenes => {
+      this.todasLasOrdenes = ordenes;
+
+      // 2. Obtener clientes
+      this.clienteServicio.obtenerTodosLosClientes().pipe(takeUntil(this.destroy$)).subscribe(clientes => {
+        
+        // 3. Cruzar datos: Contar dinámicamente las órdenes por cliente
+        this.todosLosClientes = clientes.map(cliente => {
+          const cantidad = this.todasLasOrdenes.filter(o => o.clienteId === cliente.id).length;
+          return { ...cliente, numeroOrdenes: cantidad };
+        });
+
+        this.aplicarFiltros();
+        this.actualizarEstadisticas();
+        this.cargandoClientes = false;
+      });
+    });
+  }
+
   private aplicarFiltros(): void {
     let resultado = [...this.todosLosClientes];
 
-    // Filtrar por estado (activo/inactivo) - Si es recepcionista, la lógica de ngOnInit mantiene mostrarInactivos en false
     resultado = resultado.filter(c => {
       if (this.mostrarActivos && c.activo) return true;
       if (this.mostrarInactivos && !c.activo) return true;
       return false;
     });
 
-    // Filtrar por criterio de búsqueda
     if (this.criterioBusqueda.trim()) {
+      const busqueda = this.criterioBusqueda.toLowerCase();
       resultado = resultado.filter(c =>
-        c.nombre.toLowerCase().includes(this.criterioBusqueda.toLowerCase()) ||
-        c.apellido.toLowerCase().includes(this.criterioBusqueda.toLowerCase()) ||
-        c.cedula.includes(this.criterioBusqueda) ||
-        c.email.toLowerCase().includes(this.criterioBusqueda.toLowerCase()) ||
-        c.telefono.includes(this.criterioBusqueda)
+        c.nombre.toLowerCase().includes(busqueda) ||
+        c.apellido.toLowerCase().includes(busqueda) ||
+        c.cedula.includes(busqueda) ||
+        c.email.toLowerCase().includes(busqueda) ||
+        c.telefono.includes(busqueda)
       );
     }
-
     this.clientesFiltrados = resultado;
   }
 
-  /**
-   * Actualiza las estadísticas de clientes
-   */
   private actualizarEstadisticas(): void {
     this.totalClientes = this.todosLosClientes.length;
     this.clientesActivos = this.todosLosClientes.filter(c => c.activo).length;
     this.clientesInactivos = this.todosLosClientes.filter(c => !c.activo).length;
   }
 
-  /**
-   * Busca clientes por criterio
-   */
-  buscar(): void {
-    this.aplicarFiltros();
-  }
+  buscar(): void { this.aplicarFiltros(); }
+  alternarActivos(): void { this.mostrarActivos = !this.mostrarActivos; this.aplicarFiltros(); }
+  alternarInactivos(): void { this.mostrarInactivos = !this.mostrarInactivos; this.aplicarFiltros(); }
 
-  /**
-   * Alterna el filtro de clientes activos
-   */
-  alternarActivos(): void {
-    this.mostrarActivos = !this.mostrarActivos;
-    this.aplicarFiltros();
-  }
-
-  /**
-   * Alterna el filtro de clientes inactivos
-   */
-  alternarInactivos(): void {
-    this.mostrarInactivos = !this.mostrarInactivos;
-    this.aplicarFiltros();
-  }
-
-  /**
-   * Desactiva un cliente
-   */
   desactivarCliente(clienteId: string): void {
     if (confirm('¿Está seguro de desactivar este cliente?')) {
-      this.clienteServicio.desactivarCliente(clienteId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (exitoso: boolean) => {
-            if (exitoso) {
-              this.mensajeExito = 'Cliente desactivado correctamente';
-              this.cargarClientes();
-              setTimeout(() => this.mensajeExito = '', 3000);
-            }
-          }
-        );
+      this.clienteServicio.desactivarCliente(clienteId).subscribe(exitoso => {
+        if (exitoso) {
+          this.mensajeExito = 'Cliente desactivado correctamente';
+          this.cargarClientesYOrdenes();
+          setTimeout(() => this.mensajeExito = '', 3000);
+        }
+      });
     }
   }
 
-  /**
-   * Navega al formulario de edición
-   */
   editarCliente(clienteId: string): void {
-    // Si es recepcionista, navega a editar (el formulario ya protege los campos)
     this.router.navigate(['/clientes/editar', clienteId]);
   }
-
-  /**
-   * Navega al formulario de nuevo cliente
-   */
   nuevoCliente(): void {
     this.router.navigate(['/clientes/nuevo']);
   }
-
-  /**
-   * Cancela búsqueda y limpia filtros
-   */
   limpiarBusqueda(): void {
     this.criterioBusqueda = '';
     this.mostrarActivos = true;
-    
-    // Si no es admin, forzamos a que no vea inactivos al limpiar filtros
-    if (!this.esAdministrador) {
-      this.mostrarInactivos = false;
-    } else {
-      this.mostrarInactivos = false;
-    }
-    
+    this.mostrarInactivos = false;
     this.aplicarFiltros();
   }
 
   /**
-   * Visualiza el historial de reparaciones de un cliente
+   * ==========================================
+   * LÓGICA DEL MODAL DE HISTORIAL
+   * ==========================================
    */
   verHistorialCliente(clienteId: string): void {
-    // Solo administrador puede ver historial
     if (this.esAdministrador) {
-      this.clienteServicio.obtenerClienteConHistorial(clienteId)
-        .pipe(takeUntil(this.destroy$))
-        .subscribe(
-          (clienteConHistorial: any) => {
-            if (clienteConHistorial) {
-              const cliente = this.todosLosClientes.find(c => c.id === clienteId);
-              if (cliente) {
-                alert(`\n                  HISTORIAL DEL CLIENTE - ${cliente.nombre} ${cliente.apellido}\n                  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n                  Cédula: ${cliente.cedula}\n                  Email: ${cliente.email}\n                  Teléfono: ${cliente.telefono}\n                  \n                  Órdenes de servicio: ${cliente.numeroOrdenes || 0}\n                  ${cliente.notas ? 'Notas: ' + cliente.notas : ''}\n                  \n                  [Este módulo se integrará con el módulo de Órdenes para mostrar el historial de reparaciones]\n                `);
-              }
-            }
-          }
-        );
+      // 1. Buscamos al cliente
+      this.clienteSeleccionadoHistorial = this.todosLosClientes.find(c => c.id === clienteId) || null;
+      
+      // 2. Filtramos sus órdenes. Mostraremos todas, pero las terminadas destacarán.
+      this.ordenesDelCliente = this.todasLasOrdenes.filter(o => o.clienteId === clienteId);
+      
+      // 3. Abrimos el modal
+      this.modalAbierto = true;
     }
   }
 
-    /**
-     * Asocia un cliente a una nueva orden (placeholder)
-     */
-    asociarAOrden(cliente: Cliente): void {
-      // Aquí va la lógica para asociar el cliente a una orden
-      alert(`Cliente ${cliente.nombre} ${cliente.apellido} asociado a una nueva orden (demo)`);
-    }
+  cerrarModal(): void {
+    this.modalAbierto = false;
+    this.clienteSeleccionadoHistorial = null;
+    this.ordenesDelCliente = [];
+  }
+
+  // Ahora el botón asociar te lleva directamente a crear una nueva orden
+  asociarAOrden(cliente: Cliente): void {
+    this.router.navigate(['/ordenes/nueva']);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }
