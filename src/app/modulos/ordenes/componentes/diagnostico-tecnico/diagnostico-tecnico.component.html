@@ -1,0 +1,166 @@
+<div class="container" *ngIf="ordenActual">
+  <header class="header">
+    <div class="header-content" style="display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1>Reparación: {{ ordenActual.codigo }}</h1>
+        <p>Equipo: {{ ordenActual.equipo.marca }} {{ ordenActual.equipo.modelo }} | Cliente: {{ ordenActual.clienteNombre }}</p>
+      </div>
+      <span class="badge-estado" [ngClass]="'estado-' + ordenActual.estado.toLowerCase().replace(' ', '-')">
+        Estado Actual: {{ ordenActual.estado }}
+      </span>
+    </div>
+  </header>
+
+  <main class="main-content">
+    
+    <div *ngIf="mensajeExito" class="alert alert-success">✓ {{ mensajeExito }}</div>
+    <div *ngIf="mensajeError" class="alert alert-error">✗ {{ mensajeError }}</div>
+
+    <div class="formulario-card info-card">
+      <h3 class="section-title">📋 Información de Recepción (Lectura)</h3>
+      <div class="info-grid">
+        <div class="info-item">
+          <label>Falla Reportada por el Cliente:</label>
+          <p class="highlight-text">{{ ordenActual.diagnostico.fallaReportada }}</p>
+        </div>
+        <div class="info-item">
+          <label>Accesorios Recibidos:</label>
+          <p>{{ ordenActual.diagnostico.accesoriosRecibidos || 'Ninguno' }}</p>
+        </div>
+        <div class="info-item">
+          <label>Serie / IMEI:</label>
+          <p>{{ ordenActual.equipo.serie || 'No registrado' }}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="formulario-card">
+      <h3 class="section-title">🔧 Diagnóstico del Técnico</h3>
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="informe">Informe Técnico y Daños Reales Encontrados</label>
+          <textarea id="informe" [(ngModel)]="ordenActual.diagnostico.informeTecnico" class="form-input textarea-input" placeholder="Detalla los resultados de tu revisión técnica..." rows="4"></textarea>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="presupuesto">Presupuesto Estimado ($)</label>
+          <input type="number" id="presupuesto" [(ngModel)]="ordenActual.diagnostico.presupuestoEstimado" class="form-input" placeholder="0.00">
+        </div>
+        <div class="form-group" style="justify-content: flex-end;">
+          <button class="btn btn-secondary" (click)="guardarDiagnostico()">Guardar Informe Técnico</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="formulario-card">
+      <h3 class="section-title">🛒 Repuestos y Servicios Utilizados</h3>
+      
+      <div class="add-item-box">
+        <div class="form-group">
+          <label>Tipo</label>
+          <select [(ngModel)]="tipoItemSeleccionado" class="form-input" (change)="itemSeleccionadoId = ''">
+            <option value="repuesto">Repuesto Físico</option>
+            <option value="servicio">Servicio / Mano de Obra</option>
+          </select>
+        </div>
+        
+        <div class="form-group" style="flex: 2;">
+          <label>Seleccionar Ítem</label>
+          <select [(ngModel)]="itemSeleccionadoId" class="form-input">
+            <option value="" disabled selected>-- Elige del catálogo --</option>
+            <ng-container *ngIf="tipoItemSeleccionado === 'repuesto'">
+              <option *ngFor="let rep of repuestosDisponibles" [value]="rep.id">
+                {{ rep.nombre }} (Stock: {{ rep.stock }}) - ${{ rep.precioUnitario }}
+              </option>
+            </ng-container>
+            <ng-container *ngIf="tipoItemSeleccionado === 'servicio'">
+              <option *ngFor="let serv of serviciosDisponibles" [value]="serv.id">
+                {{ serv.nombre }} - Base: ${{ serv.precioBase }}
+              </option>
+            </ng-container>
+          </select>
+        </div>
+
+        <div class="form-group" style="flex: 0.5;">
+          <label>Cant.</label>
+          <input type="number" [(ngModel)]="cantidadItem" min="1" class="form-input">
+        </div>
+
+        <div class="form-group" style="justify-content: flex-end;">
+          <button class="btn btn-primary" (click)="agregarItem()">+ Agregar</button>
+        </div>
+      </div>
+
+      <table class="items-table">
+        <thead>
+          <tr>
+            <th>Ítem</th>
+            <th>Tipo</th>
+            <th style="text-align: center;">Cant.</th>
+            <th style="text-align: right;">Precio U.</th>
+            <th style="text-align: right;">Subtotal</th>
+            <th style="text-align: center;">Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of ordenActual.items; let i = index">
+            <td><strong>{{ item.nombre }}</strong></td>
+            <td>
+              <span class="badge-tipo" [ngClass]="item.tipo === 'repuesto' ? 'bg-orange' : 'bg-blue'">
+                {{ item.tipo }}
+              </span>
+            </td>
+            <td style="text-align: center;">{{ item.cantidad }}</td>
+            <td style="text-align: right;">${{ item.precioUnitario | number:'1.2-2' }}</td>
+            <td style="text-align: right; font-weight: bold;">${{ item.subtotal | number:'1.2-2' }}</td>
+            <td style="text-align: center;">
+              <button class="btn-icon-danger" (click)="eliminarItem(i)" title="Quitar">✖</button>
+            </td>
+          </tr>
+          <tr *ngIf="ordenActual.items.length === 0">
+            <td colspan="6" style="text-align: center; color: #999; padding: 20px;">No se han agregado repuestos ni servicios a esta orden.</td>
+          </tr>
+        </tbody>
+        <tfoot *ngIf="ordenActual.items.length > 0">
+          <tr>
+            <td colspan="4" style="text-align: right; font-weight: bold;">SUBTOTAL:</td>
+            <td style="text-align: right; font-weight: bold;">${{ ordenActual.subtotal | number:'1.2-2' }}</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan="4" style="text-align: right; color: #666;">IVA (15%):</td>
+            <td style="text-align: right; color: #666;">${{ ordenActual.iva | number:'1.2-2' }}</td>
+            <td></td>
+          </tr>
+          <tr class="total-row">
+            <td colspan="4" style="text-align: right;">TOTAL A FACTURAR:</td>
+            <td style="text-align: right; color: #28a745;">${{ ordenActual.total | number:'1.2-2' }}</td>
+            <td></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="actions-footer">
+      <button class="btn btn-secondary" (click)="volver()">← Volver a la Lista</button>
+      
+      <div class="status-actions">
+        <button *ngIf="ordenActual.estado === 'Recibido'" 
+                class="btn btn-warning" (click)="cambiarEstado('Diagnóstico')">
+          Iniciar Diagnóstico
+        </button>
+        
+        <span *ngIf="ordenActual.estado === 'Diagnóstico'" style="color: #856404; font-weight: bold; background: #fff3cd; padding: 10px; border-radius: 6px;">
+          Esperando Aprobación de Cliente (Recepcionista)
+        </span>
+
+        <button *ngIf="ordenActual.estado === 'En Reparación'" 
+                class="btn btn-success" (click)="cambiarEstado('Listo')">
+          ✓ Marcar como "Listo" (Reparado)
+        </button>
+      </div>
+    </div>
+
+  </main>
+</div>

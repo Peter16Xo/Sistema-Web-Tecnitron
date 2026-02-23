@@ -10,7 +10,8 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AutenticacionServicio } from '../../../../servicios/autenticacion.servicio';
-import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
+import { Usuario } from '../../modelos/usuario.modelo';
+import { OrdenServicio } from '../../../ordenes/servicios/orden.service';
 
 @Component({
   selector: 'app-tecnico-dashboard',
@@ -20,65 +21,50 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
   styleUrls: ['./tecnico-dashboard.component.css']
 })
 export class TecnicoDashboardComponent implements OnInit, OnDestroy {
-    irAListarRepuestos() {
-      this.router.navigate(['/inventario/listar-repuestos']);
-    }
-  // PROPIEDADES: Control de usuario autenticado
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;
-  sesionActual: SesionUsuario | null = null;
 
-  // PROPIEDADES: Estadísticas y datos
+  // Estadísticas dinámicas
   ordenesAsignadas = 0;
-  ordenesCompletadas = 0;
   reparacionesEnProgreso = 0;
+  ordenesCompletadas = 0;
 
-  /**
-   * Constructor del componente
-   * @param autenticacionServicio Servicio de autenticación
-   * @param router Servicio de enrutamiento
-   */
   constructor(
     private autenticacionServicio: AutenticacionServicio,
-    private router: Router
+    private router: Router,
+    private ordenServicio: OrdenServicio // INYECTADO
   ) {}
 
-  /**
-   * Inicializa el componente
-   */
   ngOnInit(): void {
     this.verificarAutenticacion();
-    this.cargarEstadisticas();
+    this.cargarEstadisticasDinamicas();
   }
 
-  /**
-   * Verifica que el usuario esté autenticado y sea técnico
-   */
   private verificarAutenticacion(): void {
     const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
-    const sesionActual = this.autenticacionServicio.obtenerSesionActual();
-
     if (!usuarioActual || usuarioActual.rol.tipo !== 'tecnico') {
       this.router.navigate(['/dashboard']);
     } else {
       this.usuarioActual = usuarioActual;
-      this.sesionActual = sesionActual;
     }
   }
 
-  /**
-   * Carga las estadísticas del sistema
-   */
-  private cargarEstadisticas(): void {
-    // Aquí se cargarían datos desde servicios
-    this.ordenesAsignadas = 8;
-    this.ordenesCompletadas = 12;
-    this.reparacionesEnProgreso = 3;
+  private cargarEstadisticasDinamicas(): void {
+    this.ordenServicio.ordenes$.pipe(takeUntil(this.destroy$)).subscribe(ordenes => {
+      // Pendientes de revisar (Recibido o Diagnóstico)
+      this.ordenesAsignadas = ordenes.filter(o => o.estado === 'Recibido' || o.estado === 'Diagnóstico').length;
+      // En proceso activo
+      this.reparacionesEnProgreso = ordenes.filter(o => o.estado === 'En Reparación').length;
+      // Terminadas por el técnico
+      this.ordenesCompletadas = ordenes.filter(o => o.estado === 'Listo' || o.estado === 'Entregado').length;
+    });
   }
 
-  /**
-   * Cierra sesión del usuario
-   */
+  irAListarRepuestos() { this.router.navigate(['/inventario/listar-repuestos']); }
+  
+  // NUEVO: Método para ir a sus órdenes
+  irAMisOrdenes() { this.router.navigate(['/ordenes']); }
+
   cerrarSesion(): void {
     if (confirm('¿Está seguro de que desea cerrar sesión?')) {
       this.autenticacionServicio.cerrarSesion();
@@ -86,9 +72,6 @@ export class TecnicoDashboardComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Limpia las suscripciones al destruir el componente
-   */
   ngOnDestroy(): void {
     this.destroy$.next();
     this.destroy$.complete();

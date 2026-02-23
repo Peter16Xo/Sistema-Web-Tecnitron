@@ -1,0 +1,104 @@
+<div class="container">
+  <section class="usuarios-section">
+    
+    <div class="section-header">
+      <h2>Gestión de Órdenes de Reparación</h2>
+      <button *ngIf="rolUsuario === 'recepcionista' || rolUsuario === 'administrador'" class="btn-primary" (click)="irANuevaOrden()">
+        + Nueva Orden (Recepción)
+      </button>
+    </div>
+
+    <div style="background-color: #f9f9f9; padding: 20px; border: 2px solid #e0e0e0; border-radius: 8px; margin-bottom: 25px;">
+      <div class="search-bar" style="margin-bottom: 0;">
+        <input 
+          type="text" 
+          placeholder="Buscar por código (Ej. ORD-0001), equipo, o cédula del cliente..."
+          [(ngModel)]="criterioBusqueda"
+          (input)="aplicarFiltros()"
+          class="search-input"
+          style="flex: 2;"
+        >
+        <select [(ngModel)]="filtroEstado" (change)="aplicarFiltros()" class="search-input" style="flex: 1; cursor: pointer;">
+          <option value="">Todos los Estados</option>
+          <option value="Recibido">Recibido (En Espera)</option>
+          <option value="Diagnóstico">En Diagnóstico</option>
+          <option value="En Reparación">En Reparación (Aceptado)</option>
+          <option value="Listo">Listo para Entregar</option>
+          <option value="Entregado">Entregado</option>
+          <option value="Cancelado" *ngIf="rolUsuario !== 'tecnico'">Cancelado / Rechazado</option>
+        </select>
+
+        <button class="btn-secondary" (click)="limpiarBusqueda()">Limpiar</button>
+      </div>
+    </div>
+
+    <div class="users-table-container">
+      <table class="users-table" *ngIf="ordenesFiltradas.length > 0">
+        <thead>
+          <tr>
+            <th>Código</th>
+            <th>Cliente</th>
+            <th>Equipo</th>
+            <th>Fecha Ingreso</th>
+            <th style="text-align: center;">Estado</th>
+            <th style="text-align: center; width: 220px;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ord of ordenesFiltradas" [ngStyle]="{'opacity': ord.estado === 'Cancelado' ? '0.6' : '1'}">
+            <td><strong>{{ ord.codigo }}</strong></td>
+            <td>
+              {{ ord.clienteNombre }}<br>
+              <small style="color:#666">CI: {{ ord.clienteCedula }}</small>
+            </td>
+            <td>
+              {{ ord.equipo.tipo }} {{ ord.equipo.marca }}<br>
+              <small style="color:#666">{{ ord.equipo.modelo }}</small>
+            </td>
+            <td>{{ ord.fechaRecepcion | date:'dd/MM/yyyy HH:mm' }}</td>
+            
+            <td style="text-align: center;">
+              <span class="badge-estado" [ngClass]="obtenerClaseEstado(ord.estado)">
+                {{ ord.estado }}
+              </span>
+            </td>
+            
+            <td class="table-actions" style="justify-content: center; flex-direction: column; align-items: center;">
+              
+              <div style="display: flex; gap: 5px; justify-content: center; width: 100%;">
+                <button class="btn-info" (click)="irADetalle(ord.id)">Ver Detalle</button>
+                
+                <ng-container *ngIf="rolUsuario === 'tecnico' || rolUsuario === 'administrador'">
+                  <button *ngIf="ord.estado === 'Recibido' || ord.estado === 'En Reparación'" 
+                          class="btn-edit" (click)="irADiagnostico(ord.id)">
+                    {{ ord.estado === 'Recibido' ? 'Diagnosticar' : 'Continuar Reparación' }}
+                  </button>
+                </ng-container>
+
+                <ng-container *ngIf="rolUsuario === 'recepcionista' || rolUsuario === 'administrador'">
+                  <button *ngIf="ord.estado === 'Listo'" class="btn-success" (click)="entregarEquipo(ord)">
+                    Entregar Equipo
+                  </button>
+                </ng-container>
+              </div>
+
+              <div *ngIf="(rolUsuario === 'recepcionista' || rolUsuario === 'administrador') && ord.estado === 'Diagnóstico'" 
+                   style="margin-top: 8px; border-top: 1px dashed #ccc; padding-top: 8px; width: 100%; text-align: center;">
+                <span style="font-size: 11px; font-weight: bold; color: #555; display: block; margin-bottom: 5px;">Aprobación del Cliente:</span>
+                <div style="display: flex; gap: 5px; justify-content: center;">
+                  <button class="btn-success" (click)="aprobarPresupuesto(ord, true)" title="Aceptado">✔ Aceptar</button>
+                  <button class="btn-danger-strong" (click)="aprobarPresupuesto(ord, false)" title="Rechazado">✖ Cancelar</button>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="no-users" *ngIf="ordenesFiltradas.length === 0">
+        <p>No se encontraron órdenes de trabajo registradas.</p>
+      </div>
+    </div>
+  </section>
+</div>

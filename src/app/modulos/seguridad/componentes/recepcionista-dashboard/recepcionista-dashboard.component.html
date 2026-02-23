@@ -16,26 +16,40 @@
         <div class="stat-icon">📋</div>
         <h3>Órdenes Pendientes</h3>
         <p class="stat-number">{{ ordenesPendientes }}</p>
-        <p class="stat-description">Órdenes de reparación pendientes</p>
+        <p class="stat-description">Órdenes en taller (no entregadas)</p>
       </div>
-
       <div class="stat-card">
         <div class="stat-icon">👥</div>
         <h3>Clientes Registrados</h3>
         <p class="stat-number">{{ clientesRegistrados }}</p>
-        <p class="stat-description">Clientes en la base de datos</p>
+        <p class="stat-description">Clientes en la base de datos activos</p>
       </div>
-
       <div class="stat-card">
         <div class="stat-icon">🔧</div>
         <h3>Servicios Disponibles</h3>
         <p class="stat-number">{{ serviciosDisponibles }}</p>
-        <p class="stat-description">Tipos de servicios ofrecidos</p>
+        <p class="stat-description">Tipos de servicios en catálogo</p>
       </div>
     </div>
 
     <section class="clientes-quick-access">
-      <h3>Gestión de Clientes (Recepcionista)</h3>
+      <h3>Órdenes de Reparación</h3>
+      <div class="clientes-funciones-grid">
+        <div class="clientes-funcion-card">
+          <h4>Recepción de Equipo</h4>
+          <p>Crea una nueva orden registrando la falla inicial y el equipo del cliente.</p>
+          <button class="btn-acceso" (click)="irANuevaOrden()" style="background: #28a745;">+ Nueva Orden</button>
+        </div>
+        <div class="clientes-funcion-card">
+          <h4>Seguimiento y Entrega</h4>
+          <p>Busca órdenes para ver el detalle, generar pre-factura o entregar el equipo.</p>
+          <button class="btn-acceso" (click)="irAListaOrdenes()">Buscar Órdenes</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="clientes-quick-access">
+      <h3>Gestión de Clientes</h3>
       <div class="clientes-funciones-grid">
         <div class="clientes-funcion-card">
           <h4>Registrar Cliente</h4>
@@ -51,11 +65,11 @@
     </section>
 
     <section class="clientes-quick-access">
-      <h3>Inventario (Recepcionista)</h3>
+      <h3>Catálogo (Solo Consulta)</h3>
       <div class="clientes-funciones-grid">
         <div class="clientes-funcion-card">
-          <h4>Catálogo de Servicios y Repuestos</h4>
-          <p>Consulta el catálogo de servicios y repuestos para brindar información de costos estimados.</p>
+          <h4>Precios de Servicios y Repuestos</h4>
+          <p>Consulta el catálogo para brindar información de costos estimados al cliente.</p>
           <button class="btn-acceso" (click)="irACatalogoInventario()">Ver Catálogo</button>
         </div>
       </div>

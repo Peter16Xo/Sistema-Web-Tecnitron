@@ -1,19 +1,13 @@
-/* CONTROLADOR: Dashboard Recepcionista
- * Autores: Pedro Andrés Avilés Baque, Adiel Stalin López Moreno
- * Descripción: Corrección de lógica para contar solo clientes activos.
- * Fecha: 2026
- */
-
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AutenticacionServicio } from '../../../../servicios/autenticacion.servicio';
-import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
+import { Usuario } from '../../modelos/usuario.modelo';
 import { ClienteServicio } from '../../../clientes/servicios/cliente.servicio';
 import { ServicioManoObraServicio } from '../../../inventario/servicios/servicio-mano-obra.servicio';
-
+import { OrdenServicio } from '../../../ordenes/servicios/orden.service';
 
 @Component({
   selector: 'app-recepcionista-dashboard',
@@ -27,8 +21,8 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   usuarioActual: Usuario | null = null;
 
-  // PROPIEDADES: Estadísticas dinámicas
-  ordenesPendientes = 5;
+  // Estadísticas dinámicas
+  ordenesPendientes = 0; // Ahora será dinámico
   clientesRegistrados = 0;    
   serviciosDisponibles = 0;   
 
@@ -36,7 +30,8 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
     private autenticacionServicio: AutenticacionServicio,
     private router: Router,
     private clienteServicio: ClienteServicio,
-    private serviciosServicio: ServicioManoObraServicio
+    private serviciosServicio: ServicioManoObraServicio,
+    private ordenServicio: OrdenServicio // INYECTADO
   ) {}
 
   ngOnInit(): void {
@@ -45,20 +40,18 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
   }
 
   private cargarEstadisticasDinamicas(): void {
-    // 1. Sincronizar contador de Clientes (SOLO ACTIVOS)
-    this.clienteServicio.clientes$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(clientes => {
-        // 👇 AQUÍ ESTÁ EL CAMBIO: Filtramos por c.activo antes de contar
+    this.clienteServicio.clientes$.pipe(takeUntil(this.destroy$)).subscribe(clientes => {
         this.clientesRegistrados = clientes.filter(c => c.activo).length;
-      });
+    });
 
-    // 2. Sincronizar contador de Servicios Disponibles (SOLO ACTIVOS)
-    this.serviciosServicio.servicios$
-      .pipe(takeUntil(this.destroy$))
-      .subscribe(servicios => {
+    this.serviciosServicio.servicios$.pipe(takeUntil(this.destroy$)).subscribe(servicios => {
         this.serviciosDisponibles = servicios.filter(s => s.activo).length;
-      });
+    });
+
+    // NUEVO: Contar órdenes que NO estén entregadas
+    this.ordenServicio.ordenes$.pipe(takeUntil(this.destroy$)).subscribe(ordenes => {
+        this.ordenesPendientes = ordenes.filter(o => o.estado !== 'Entregado').length;
+    });
   }
 
   private verificarAutenticacion(): void {
@@ -71,17 +64,13 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
   }
 
   // Métodos de navegación rápida
-  irARegistrarCliente() {
-    this.router.navigate(['/clientes/nuevo'], { queryParams: { returnToList: 'true' } });
-  }
-
-  irABuscarCliente() {
-    this.router.navigate(['/clientes'], { queryParams: { buscar: 1 } });
-  }
-
-  irACatalogoInventario() {
-    this.router.navigate(['/inventario/listar-repuestos']);
-  }
+  irARegistrarCliente() { this.router.navigate(['/clientes/nuevo'], { queryParams: { returnToList: 'true' } }); }
+  irABuscarCliente() { this.router.navigate(['/clientes'], { queryParams: { buscar: 1 } }); }
+  irACatalogoInventario() { this.router.navigate(['/inventario/listar-repuestos']); }
+  
+  // NUEVOS MÉTODOS DE ÓRDENES
+  irANuevaOrden() { this.router.navigate(['/ordenes/nueva']); }
+  irAListaOrdenes() { this.router.navigate(['/ordenes']); }
 
   cerrarSesion(): void {
     if (confirm('¿Está seguro de que desea cerrar sesión?')) {

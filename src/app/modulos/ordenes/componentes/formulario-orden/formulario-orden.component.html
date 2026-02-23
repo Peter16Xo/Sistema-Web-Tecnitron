@@ -1,0 +1,95 @@
+<div class="container">
+  <header class="header">
+    <div class="header-content">
+      <h1>Registrar Nueva Orden</h1>
+      <p>Recepción de equipo y registro de falla inicial reportada por el cliente.</p>
+    </div>
+  </header>
+
+  <main class="main-content">
+    
+    <div *ngIf="mensajeExito" class="alert alert-success">
+      ✓ {{ mensajeExito }}
+    </div>
+    <div *ngIf="mensajeError" class="alert alert-error">
+      ✗ {{ mensajeError }}
+    </div>
+
+    <form (ngSubmit)="guardar()" class="formulario-card">
+      
+      <h3 class="section-title">1. Datos del Cliente</h3>
+      <div class="form-row" style="align-items: flex-end;">
+        <div class="form-group" style="flex: 2;">
+          <label for="cliente">Seleccione el Cliente *</label>
+          <select id="cliente" [(ngModel)]="formulario.clienteId" name="clienteId" class="form-input" required>
+            <option value="" disabled selected>-- Buscar y seleccionar cliente --</option>
+            <option *ngFor="let cli of clientes" [value]="cli.id">
+              {{ cli.nombre }} {{ cli.apellido }} (CI: {{ cli.cedula }})
+            </option>
+          </select>
+        </div>
+        <div class="form-group" style="flex: 1;">
+          <button type="button" class="btn btn-secondary" style="width: 100%;" (click)="irANuevoCliente()">
+            + Registrar Nuevo Cliente
+          </button>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <h3 class="section-title">2. Identificación del Equipo</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label for="tipo">Tipo de Equipo *</label>
+          <select id="tipo" [(ngModel)]="formulario.equipo.tipo" name="tipoEquipo" class="form-input" required>
+            <option value="" disabled selected>Ej. Celular, Laptop...</option>
+            <option value="Celular / Smartphone">Celular / Smartphone</option>
+            <option value="Laptop / Portátil">Laptop / Portátil</option>
+            <option value="PC de Escritorio">PC de Escritorio</option>
+            <option value="Consola de Videojuegos">Consola de Videojuegos</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Otro">Otro</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="marca">Marca *</label>
+          <input type="text" id="marca" [(ngModel)]="formulario.equipo.marca" name="marca" class="form-input" placeholder="Ej. Samsung, HP, Sony" required>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group">
+          <label for="modelo">Modelo *</label>
+          <input type="text" id="modelo" [(ngModel)]="formulario.equipo.modelo" name="modelo" class="form-input" placeholder="Ej. Galaxy S21, Pavilion x360" required>
+        </div>
+        <div class="form-group">
+          <label for="serie">Número de Serie / IMEI</label>
+          <input type="text" id="serie" [(ngModel)]="formulario.equipo.serie" name="serie" class="form-input" placeholder="Número único del equipo (Opcional)">
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <h3 class="section-title">3. Motivo de Ingreso</h3>
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="falla">Falla Reportada por el Cliente *</label>
+          <textarea id="falla" [(ngModel)]="formulario.diagnostico.fallaReportada" name="falla" class="form-input textarea-input" placeholder="Describe detalladamente qué problema reporta el cliente..." rows="3" required></textarea>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group full-width">
+          <label for="accesorios">Accesorios Recibidos</label>
+          <input type="text" id="accesorios" [(ngModel)]="formulario.diagnostico.accesoriosRecibidos" name="accesorios" class="form-input" placeholder="Ej. Cargador original, funda de silicona negra, sin batería...">
+        </div>
+      </div>
+
+      <div class="form-acciones">
+        <button type="submit" class="btn btn-primary">Crear Orden de Trabajo</button>
+        <button type="button" class="btn btn-secondary" (click)="cancelar()">Cancelar</button>
+      </div>
+      
+    </form>
+  </main>
+</div>

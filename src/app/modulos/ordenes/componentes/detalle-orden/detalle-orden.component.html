@@ -1,0 +1,108 @@
+<div class="container" *ngIf="orden">
+  
+  <div class="no-print actions-bar">
+    <button class="btn btn-secondary" (click)="volver()">← Volver</button>
+    <button class="btn btn-primary" (click)="imprimirComprobante()">🖨️ Imprimir Pre-factura</button>
+  </div>
+
+  <div *ngIf="mensajeError" class="alert alert-error no-print">
+    ✗ {{ mensajeError }}
+  </div>
+
+  <main class="document-paper">
+    
+    <header class="doc-header">
+      <div class="logo-area">
+        <h2>TECNITRON</h2>
+        <p>Sistema de Gestión de Reparaciones</p>
+      </div>
+      <div class="doc-meta">
+        <h1 class="orden-codigo">{{ orden.codigo }}</h1>
+        <span class="badge-estado" [ngClass]="'estado-' + orden.estado.toLowerCase().replace(' ', '-')">
+          {{ orden.estado }}
+        </span>
+        <p><strong>Fecha de Ingreso:</strong> {{ orden.fechaRecepcion | date:'dd/MM/yyyy HH:mm' }}</p>
+        <p *ngIf="orden.fechaEntrega"><strong>Fecha de Entrega:</strong> {{ orden.fechaEntrega | date:'dd/MM/yyyy' }}</p>
+      </div>
+    </header>
+
+    <div class="doc-body">
+      
+      <div class="info-row">
+        <div class="info-box">
+          <h3>Datos del Cliente</h3>
+          <p><strong>Nombre:</strong> {{ orden.clienteNombre }}</p>
+          <p><strong>Cédula:</strong> {{ orden.clienteCedula }}</p>
+        </div>
+        
+        <div class="info-box">
+          <h3>Datos del Equipo</h3>
+          <p><strong>Equipo:</strong> {{ orden.equipo.tipo }} {{ orden.equipo.marca }}</p>
+          <p><strong>Modelo:</strong> {{ orden.equipo.modelo }}</p>
+          <p><strong>Serie/IMEI:</strong> {{ orden.equipo.serie || 'N/A' }}</p>
+        </div>
+      </div>
+
+      <div class="info-box full-width" style="margin-top: 20px;">
+        <h3>Detalles de la Reparación</h3>
+        <p><strong>Falla Reportada:</strong> {{ orden.diagnostico.fallaReportada }}</p>
+        <p><strong>Accesorios Recibidos:</strong> {{ orden.diagnostico.accesoriosRecibidos || 'Ninguno' }}</p>
+        <hr style="margin: 10px 0; border: 0; border-top: 1px dashed #ccc;">
+        
+        <p><strong>Técnico Asignado:</strong> {{ orden.tecnicoNombre || 'Pendiente de asignación' }}</p>
+        <p><strong>Informe Técnico:</strong> {{ orden.diagnostico.informeTecnico || 'Diagnóstico aún no realizado.' }}</p>
+        
+        <p *ngIf="orden.diagnostico.presupuestoEstimado !== undefined" style="color: #b71c1c; font-size: 16px; margin-top: 10px;">
+          <strong>Presupuesto Estimado a Pagar:</strong> ${{ orden.diagnostico.presupuestoEstimado | number:'1.2-2' }}
+        </p>
+      </div>
+
+      <h3 style="margin-top: 30px; border-bottom: 2px solid #333; padding-bottom: 5px;">Detalle de Repuestos y Servicios</h3>
+      <table class="invoice-table">
+        <thead>
+          <tr>
+            <th>Descripción</th>
+            <th>Tipo</th>
+            <th style="text-align: center;">Cant.</th>
+            <th style="text-align: right;">P. Unitario</th>
+            <th style="text-align: right;">Subtotal</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of orden.items">
+            <td>{{ item.nombre }}</td>
+            <td style="text-transform: capitalize; color: #666;">{{ item.tipo }}</td>
+            <td style="text-align: center;">{{ item.cantidad }}</td>
+            <td style="text-align: right;">${{ item.precioUnitario | number:'1.2-2' }}</td>
+            <td style="text-align: right;">${{ item.subtotal | number:'1.2-2' }}</td>
+          </tr>
+          <tr *ngIf="orden.items.length === 0">
+            <td colspan="5" style="text-align: center; color: #999; padding: 20px;">No se han registrado consumos en esta orden.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="totals-box">
+        <div class="total-line">
+          <span>Subtotal:</span>
+          <span>${{ orden.subtotal | number:'1.2-2' }}</span>
+        </div>
+        <div class="total-line">
+          <span>IVA (15%):</span>
+          <span>${{ orden.iva | number:'1.2-2' }}</span>
+        </div>
+        <div class="total-line grand-total">
+          <span>TOTAL:</span>
+          <span>${{ orden.total | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+    </div>
+
+    <footer class="doc-footer">
+      <p>Este documento es una pre-factura y comprobante de estado de equipo.</p>
+      <p>¡Gracias por confiar en TECNITRON!</p>
+    </footer>
+
+  </main>
+</div>

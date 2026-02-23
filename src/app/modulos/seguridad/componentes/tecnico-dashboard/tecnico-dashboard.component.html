@@ -14,25 +14,34 @@
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon">📋</div>
-        <h3>Órdenes Asignadas</h3>
+        <h3>Por Revisar</h3>
         <p class="stat-number">{{ ordenesAsignadas }}</p>
-        <p class="stat-description">Órdenes asignadas para ti</p>
+        <p class="stat-description">Recibidas y en Diagnóstico</p>
       </div>
-
       <div class="stat-card">
         <div class="stat-icon">⚙️</div>
         <h3>En Progreso</h3>
-        <p class="stat-number">{{ reparacionesEnProgreso }}</p>
-        <p class="stat-description">Reparaciones actualmente en curso</p>
+        <p class="stat-number" style="color: #ff9800;">{{ reparacionesEnProgreso }}</p>
+        <p class="stat-description">Reparaciones en curso</p>
       </div>
-
       <div class="stat-card">
         <div class="stat-icon">✓</div>
-        <h3>Completadas</h3>
-        <p class="stat-number">{{ ordenesCompletadas }}</p>
-        <p class="stat-description">Reparaciones finalizadas</p>
+        <h3>Finalizadas</h3>
+        <p class="stat-number" style="color: #28a745;">{{ ordenesCompletadas }}</p>
+        <p class="stat-description">Equipos Listos / Entregados</p>
       </div>
     </div>
+
+    <section class="inventario-quick-access">
+      <h3>Cola de Trabajo (Órdenes)</h3>
+      <div class="inventario-funciones-grid">
+        <div class="funcion-card">
+          <h4>Mis Reparaciones</h4>
+          <p>Visualiza los equipos pendientes, registra tus diagnósticos y cambia los estados de reparación.</p>
+          <button class="btn-acceso" (click)="irAMisOrdenes()" style="background: #ff9800;">Ver Cola de Trabajo</button>
+        </div>
+      </div>
+    </section>
 
     <section class="inventario-quick-access">
       <h3>Inventario (Técnico)</h3>
