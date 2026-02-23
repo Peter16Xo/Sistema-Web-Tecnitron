@@ -1,0 +1,181 @@
+<div class="container">
+
+  <div *ngIf="mensajeExito" class="alert-success">
+    ✓ {{ mensajeExito }}
+  </div>
+
+  <section class="usuarios-section">
+    
+    <div class="section-header">
+  <h2>
+    <span *ngIf="rolUsuario === 'administrador'">Gestión de Repuestos</span>
+    
+    <span *ngIf="rolUsuario === 'recepcionista'">Catálogo de Repuestos y Servicios</span>
+    
+    <span *ngIf="rolUsuario === 'tecnico'">Catálogo de Repuestos</span>
+  </h2>
+  
+  <button *ngIf="rolUsuario === 'administrador'" class="btn-primary" (click)="irANuevo()">
+    + Nuevo Repuesto
+  </button>
+</div>
+
+    <div *ngIf="rolUsuario === 'recepcionista'" style="margin-bottom: 40px;">
+      <h3 class="subtitulo-seccion">Mano de Obra / Servicios</h3>
+      
+      <div class="search-bar" style="margin-bottom: 15px;">
+        <input 
+          type="text" 
+          placeholder="Buscar servicio por nombre o descripción..."
+          [(ngModel)]="criterioBusquedaServicios"
+          (input)="aplicarFiltrosServicios()"
+          class="search-input"
+        >
+        <button class="btn-secondary" (click)="limpiarBusquedaServicios()">Limpiar</button>
+      </div>
+
+      <div class="users-table-container">
+        <table class="users-table">
+          <thead>
+            <tr>
+              <th>Servicio</th>
+              <th>Descripción</th>
+              <th style="text-align: center;">Precio Base</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let serv of serviciosFiltrados">
+              <td><strong>{{ serv.nombre }}</strong></td>
+              <td>{{ serv.descripcion }}</td>
+              <td style="text-align: center; font-weight: bold; color: #2e7d32;">
+                ${{ serv.precioBase | number:'1.2-2' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="no-users" *ngIf="serviciosFiltrados.length === 0" style="padding: 15px; border-top: none;">
+          <p>No se encontraron servicios.</p>
+        </div>
+      </div>
+    </div>
+
+
+    <h3 class="subtitulo-seccion" *ngIf="rolUsuario !== 'administrador'">
+      Catálogo Físico de Repuestos
+    </h3>
+    
+    <div class="filter-box" [ngStyle]="{'padding': rolUsuario === 'administrador' ? '20px' : '0', 'border': rolUsuario === 'administrador' ? '2px solid #e0e0e0' : 'none', 'background-color': rolUsuario === 'administrador' ? '#f9f9f9' : 'transparent'}">
+      
+      <div class="search-bar" [ngStyle]="{'margin-bottom': rolUsuario === 'administrador' ? '15px' : '15px'}">
+        <input 
+          type="text" 
+          placeholder="Buscar repuesto por nombre o descripción..."
+          [(ngModel)]="criterioBusquedaRepuestos"
+          (input)="aplicarFiltrosRepuestos()"
+          class="search-input"
+        >
+        <button class="btn-secondary" (click)="limpiarBusquedaRepuestos()">Limpiar</button>
+      </div>
+
+      <div class="checkbox-group" *ngIf="rolUsuario === 'administrador'">
+        <label>
+          <input type="checkbox" [checked]="mostrarActivos" (change)="alternarActivos()" />
+          <span class="text-success">✓ Activos ({{ repuestosActivos }})</span>
+        </label>
+        <label>
+          <input type="checkbox" [checked]="mostrarInactivos" (change)="alternarInactivos()" />
+          <span class="text-danger">✗ Inactivos ({{ repuestosInactivos }})</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="users-table-container">
+      <table class="users-table" *ngIf="todosLosRepuestos.length > 0">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Descripción</th>
+            <th style="text-align: center;">Stock</th>
+            <th style="text-align: center;">Precio U.</th>
+            <th *ngIf="rolUsuario === 'administrador'" style="text-align: center;">Estado</th>
+            <th *ngIf="rolUsuario === 'administrador'" style="text-align: center;">Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let rep of repuestosFiltrados" [class.usuario-inactivo]="!rep.activo">
+            <td><strong>{{ rep.nombre }}</strong></td>
+            <td>{{ rep.descripcion }}</td>
+            
+            <td style="text-align: center;">
+              <span [ngClass]="rep.stock <= 5 ? 'stock-bajo' : ''">
+                {{ rep.stock }}
+              </span>
+            </td>
+            
+            <td style="text-align: center;"><strong>${{ rep.precioUnitario | number:'1.2-2' }}</strong></td>
+            
+            <td *ngIf="rolUsuario === 'administrador'" style="text-align: center;">
+              <span class="status" [ngClass]="rep.activo ? 'activo' : 'inactivo'">
+                {{ rep.activo ? '✓ Activo' : '✗ Inactivo' }}
+              </span>
+            </td>
+            
+            <td class="table-actions" *ngIf="rolUsuario === 'administrador'">
+              <button class="btn-edit" (click)="irAEditar(rep.id)" [disabled]="!rep.activo">Editar</button>
+              <button class="btn-info" (click)="irAStock(rep.id)" [disabled]="!rep.activo">Stock</button>
+              <button class="btn-delete" (click)="desactivarRepuesto(rep)" [disabled]="!rep.activo">Desactivar</button>
+              <button class="btn-danger-strong" (click)="eliminarRepuestoFisico(rep)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="no-users" *ngIf="repuestosFiltrados.length === 0">
+        <p>No hay repuestos que coincidan con tu búsqueda y filtros.</p>
+      </div>
+    </div>
+
+    <div class="users-info">
+      <p>Total de repuestos: <strong>{{ todosLosRepuestos.length }}</strong> 
+         <span *ngIf="rolUsuario === 'administrador'">
+           | Activos: <strong>{{ repuestosActivos }}</strong> 
+           | Inactivos: <strong>{{ repuestosInactivos }}</strong>
+         </span>
+      </p>
+    </div>
+
+  </section>
+
+  <section class="usuarios-section" *ngIf="rolUsuario === 'tecnico'">
+    <div class="section-header" style="border-bottom: none; margin-bottom: 10px;">
+      <h2><span style="color: #667eea;">⚙️</span> Solicitar Asignación a Orden</h2>
+    </div>
+    
+    <form (ngSubmit)="solicitarAsignacion()" class="form-row">
+      <div class="form-group">
+        <label>Código de Orden</label>
+        <input type="text" [(ngModel)]="ordenTrabajoSolicitada" name="orden" class="form-input" placeholder="Ej. ORD-001" required>
+      </div>
+      
+      <div class="form-group" style="flex: 2;">
+        <label>Repuesto Requerido</label>
+        <select [(ngModel)]="repuestoSolicitado" name="repuesto" class="form-input" required>
+          <option value="" disabled selected>Seleccione un repuesto...</option>
+          <option *ngFor="let rep of todosLosRepuestos" [value]="rep.nombre" [disabled]="!rep.activo || rep.stock === 0">
+            {{ rep.nombre }} (Disponible: {{ rep.stock }})
+          </option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Cantidad</label>
+        <input type="number" [(ngModel)]="cantidadSolicitada" name="cantidad" min="1" class="form-input" placeholder="1" required>
+      </div>
+      
+      <div class="form-group btn-align" style="flex: 0;">
+        <button type="submit" class="btn-primary" style="padding: 11px 24px; white-space: nowrap;">Confirmar Solicitud</button>
+      </div>
+    </form>
+  </section>
+
+</div>

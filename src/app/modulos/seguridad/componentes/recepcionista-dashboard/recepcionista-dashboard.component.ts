@@ -1,6 +1,6 @@
 /* CONTROLADOR: Dashboard Recepcionista
- * Autores: Pedro Andrés Avilés Baque,  Adiel Stalin López Moreno
- * Descripción: Dashboard para recepcionistas con funciones de atención al cliente
+ * Autores: Pedro Andrés Avilés Baque, Adiel Stalin López Moreno
+ * Descripción: Corrección de lógica para contar solo clientes activos.
  * Fecha: 2026
  */
 
@@ -11,6 +11,9 @@ import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { AutenticacionServicio } from '../../../../servicios/autenticacion.servicio';
 import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
+import { ClienteServicio } from '../../../clientes/servicios/cliente.servicio';
+import { ServicioManoObraServicio } from '../../../inventario/servicios/servicio-mano-obra.servicio';
+
 
 @Component({
   selector: 'app-recepcionista-dashboard',
@@ -21,9 +24,54 @@ import { Usuario, SesionUsuario } from '../../modelos/usuario.modelo';
 })
 export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
   
+  private destroy$ = new Subject<void>();
+  usuarioActual: Usuario | null = null;
+
+  // PROPIEDADES: Estadísticas dinámicas
+  ordenesPendientes = 5;
+  clientesRegistrados = 0;    
+  serviciosDisponibles = 0;   
+
+  constructor(
+    private autenticacionServicio: AutenticacionServicio,
+    private router: Router,
+    private clienteServicio: ClienteServicio,
+    private serviciosServicio: ServicioManoObraServicio
+  ) {}
+
+  ngOnInit(): void {
+    this.verificarAutenticacion();
+    this.cargarEstadisticasDinamicas();
+  }
+
+  private cargarEstadisticasDinamicas(): void {
+    // 1. Sincronizar contador de Clientes (SOLO ACTIVOS)
+    this.clienteServicio.clientes$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(clientes => {
+        // 👇 AQUÍ ESTÁ EL CAMBIO: Filtramos por c.activo antes de contar
+        this.clientesRegistrados = clientes.filter(c => c.activo).length;
+      });
+
+    // 2. Sincronizar contador de Servicios Disponibles (SOLO ACTIVOS)
+    this.serviciosServicio.servicios$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(servicios => {
+        this.serviciosDisponibles = servicios.filter(s => s.activo).length;
+      });
+  }
+
+  private verificarAutenticacion(): void {
+    const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
+    if (!usuarioActual || usuarioActual.rol.tipo !== 'recepcionista') {
+      this.router.navigate(['/dashboard']);
+    } else {
+      this.usuarioActual = usuarioActual;
+    }
+  }
+
   // Métodos de navegación rápida
   irARegistrarCliente() {
-    // ENVIAMOS EL PARÁMETRO returnToList PARA FORZAR LA SALIDA HACIA LA LISTA
     this.router.navigate(['/clientes/nuevo'], { queryParams: { returnToList: 'true' } });
   }
 
@@ -31,51 +79,8 @@ export class RecepcionistaDashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/clientes'], { queryParams: { buscar: 1 } });
   }
 
-  irAListaClientes() {
-    this.router.navigate(['/clientes']);
-  }
-  
-  // Navegación al catálogo de inventario
   irACatalogoInventario() {
     this.router.navigate(['/inventario/listar-repuestos']);
-  }
-
-  // PROPIEDADES: Control de usuario autenticado
-  private destroy$ = new Subject<void>();
-  usuarioActual: Usuario | null = null;
-  sesionActual: SesionUsuario | null = null;
-
-  // PROPIEDADES: Estadísticas y datos
-  ordenesPendientes = 0;
-  clientesRegistrados = 0;
-  serviciosDisponibles = 0;
-
-  constructor(
-    private autenticacionServicio: AutenticacionServicio,
-    private router: Router
-  ) {}
-
-  ngOnInit(): void {
-    this.verificarAutenticacion();
-    this.cargarEstadisticas();
-  }
-
-  private verificarAutenticacion(): void {
-    const usuarioActual = this.autenticacionServicio.obtenerUsuarioActual();
-    const sesionActual = this.autenticacionServicio.obtenerSesionActual();
-
-    if (!usuarioActual || usuarioActual.rol.tipo !== 'recepcionista') {
-      this.router.navigate(['/dashboard']);
-    } else {
-      this.usuarioActual = usuarioActual;
-      this.sesionActual = sesionActual;
-    }
-  }
-
-  private cargarEstadisticas(): void {
-    this.ordenesPendientes = 5;
-    this.clientesRegistrados = 24;
-    this.serviciosDisponibles = 12;
   }
 
   cerrarSesion(): void {

@@ -36,8 +36,8 @@ export class AdministradorDashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/inventario/listar-repuestos']);
   }
 
-  irARegistrarServicio() {
-    this.router.navigate(['/inventario/registrar-servicio']);
+  irAListarServicios() {
+    this.router.navigate(['/inventario/servicios']);
   }
 
   // PROPIEDADES: Control de usuario autenticado

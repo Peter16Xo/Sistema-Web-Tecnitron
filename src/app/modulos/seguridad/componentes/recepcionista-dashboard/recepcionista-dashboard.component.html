@@ -1,9 +1,4 @@
-<!-- VISTA: Dashboard Recepcionista
- Panel de control para recepcionistas
--->
-
 <div class="recepcionista-dashboard">
-  <!-- ENCABEZADO -->
   <header class="dashboard-header">
     <div class="header-content">
       <h1>Panel de Recepcionista</h1>
@@ -14,30 +9,8 @@
     </div>
   </header>
 
-  <!-- CONTENIDO PRINCIPAL -->
   <main class="dashboard-content">
-    <div class="welcome-section">
-      <h2>Bienvenido al Sistema TECNITRON</h2>
-      <p>Como recepcionista, tienes acceso a las siguientes funciones:</p>
-    </div>
-    <!-- ACCESOS RÁPIDOS AL MÓDULO CLIENTES -->
-    <section class="clientes-quick-access">
-      <h3>Gestión de Clientes (Recepcionista)</h3>
-      <div class="clientes-funciones-grid">
-        <div class="clientes-funcion-card">
-          <h4>Registrar Cliente</h4>
-          <p>Registra un nuevo cliente al recibir un equipo.</p>
-          <button class="btn-acceso" (click)="irARegistrarCliente()">Registrar Cliente</button>
-        </div>
-        <div class="clientes-funcion-card">
-          <h4>Buscar Cliente</h4>
-          <p>Busca clientes existentes para asociarlos a nuevas órdenes.</p>
-          <button class="btn-acceso" (click)="irABuscarCliente()">Buscar Cliente</button>
-        </div>
-      </div>
-    </section>
-
-    <!-- TARJETAS DE ESTADÍSTICAS -->
+    
     <div class="stats-grid">
       <div class="stat-card">
         <div class="stat-icon">📋</div>
@@ -61,35 +34,32 @@
       </div>
     </div>
 
-    <!-- FUNCIONES DISPONIBLES -->
-    <section class="functions-section">
-      <h3>Funciones Disponibles</h3>
-      <ul class="functions-list">
-        <li>✓ Registrar nuevos clientes</li>
-        <li>✓ Crear órdenes de reparación</li>
-        <li>✓ Ver estado de órdenes</li>
-        <li>✓ Gestionar información de clientes</li>
-        <li>✓ Generar reportes básicos</li>
-      </ul>
+    <section class="clientes-quick-access">
+      <h3>Gestión de Clientes (Recepcionista)</h3>
+      <div class="clientes-funciones-grid">
+        <div class="clientes-funcion-card">
+          <h4>Registrar Cliente</h4>
+          <p>Registra un nuevo cliente al recibir un equipo.</p>
+          <button class="btn-acceso" (click)="irARegistrarCliente()">Registrar Cliente</button>
+        </div>
+        <div class="clientes-funcion-card">
+          <h4>Buscar Cliente</h4>
+          <p>Busca clientes existentes para asociarlos a nuevas órdenes.</p>
+          <button class="btn-acceso" (click)="irABuscarCliente()">Buscar Cliente</button>
+        </div>
+      </div>
     </section>
 
-    <!-- MENSAJES -->
-    <section class="info-section">
-      <h3>Información Importante</h3>
-      <p>Para una mejor gestión del taller, sigue estos pasos:</p>
-      <ol>
-        <li>Registra todos los clientes nuevos en el sistema</li>
-        <li>Crea una orden de reparación para cada servicio solicitado</li>
-        <li>Mantén la información del cliente actualizada</li>
-        <li>Comunica con los técnicos sobre el estado de las reparaciones</li>
-      </ol>
+    <section class="clientes-quick-access">
+      <h3>Inventario (Recepcionista)</h3>
+      <div class="clientes-funciones-grid">
+        <div class="clientes-funcion-card">
+          <h4>Catálogo de Servicios y Repuestos</h4>
+          <p>Consulta el catálogo de servicios y repuestos para brindar información de costos estimados.</p>
+          <button class="btn-acceso" (click)="irACatalogoInventario()">Ver Catálogo</button>
+        </div>
+      </div>
     </section>
 
-    <!-- CATÁLOGO DE SERVICIOS Y REPUESTOS -->
-    <section class="inventario-quick-access">
-      <h3>Catálogo de Servicios y Repuestos</h3>
-      <p>Consulta el catálogo de servicios y repuestos para brindar información de costos estimados.</p>
-      <button class="btn-acceso" (click)="irACatalogoInventario()">Ver Catálogo</button>
-    </section>
   </main>
 </div>

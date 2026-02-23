@@ -1,0 +1,92 @@
+<div class="container">
+  
+  <header class="header">
+    <div class="header-content">
+      <h1 *ngIf="modo === 'nuevo'">Nuevo Repuesto</h1>
+      <h1 *ngIf="modo === 'editar'">Editar Repuesto</h1>
+      <h1 *ngIf="modo === 'stock'">Actualizar Stock</h1>
+      
+      <p *ngIf="modo === 'nuevo'">Registra un nuevo repuesto físico en el catálogo.</p>
+      <p *ngIf="modo === 'editar'">Modificando detalles de: <strong>{{ repuestoActual?.nombre }}</strong></p>
+      <p *ngIf="modo === 'stock'">Ajustando existencias de: <strong>{{ repuestoActual?.nombre }}</strong></p>
+    </div>
+  </header>
+
+  <main class="main-content">
+    
+    <div *ngIf="mensajeExito" class="alert alert-success">
+      ✓ {{ mensajeExito }}
+    </div>
+    <div *ngIf="mensajeError" class="alert alert-error">
+      ✗ {{ mensajeError }}
+    </div>
+
+    <div class="formulario-card">
+      <form (ngSubmit)="guardar()">
+        
+        <ng-container *ngIf="modo === 'nuevo'">
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="nombre">Nombre del Repuesto *</label>
+              <input type="text" id="nombre" [(ngModel)]="formulario.nombre" name="nombre" class="form-input" placeholder="Ej. Pantalla LCD Genérica" required>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="modo === 'nuevo' || modo === 'editar'">
+          <div class="form-row">
+            <div class="form-group full-width">
+              <label for="descripcion">Descripción *</label>
+              <input type="text" id="descripcion" [(ngModel)]="formulario.descripcion" name="descripcion" class="form-input" placeholder="Detalles técnicos del repuesto..." required>
+            </div>
+          </div>
+          
+          <div class="form-row">
+            <div class="form-group" *ngIf="modo === 'nuevo'">
+              <label for="stock">Stock Inicial</label>
+              <input type="number" id="stock" [(ngModel)]="formulario.stock" name="stock" min="0" class="form-input" placeholder="0">
+            </div>
+            <div class="form-group" [class.full-width]="modo === 'editar'">
+              <label for="precioUnitario">Precio Unitario ($) *</label>
+              <input type="number" id="precioUnitario" [(ngModel)]="formulario.precioUnitario" name="precioUnitario" min="0.01" step="0.01" class="form-input" placeholder="0.00" required>
+            </div>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="modo === 'stock'">
+          <div class="form-row">
+            <div class="form-group full-width">
+              <div style="background-color: #f8f9fa; border: 1px solid #e0e0e0; padding: 15px; border-radius: 6px; color: #333; font-size: 1.1rem; text-align: center;">
+                Stock Actual Disponible: <strong>{{ repuestoActual?.stock }} unidades</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="tipoMovimiento">Tipo de Movimiento *</label>
+              <select id="tipoMovimiento" [(ngModel)]="formularioStock.tipoMovimiento" name="tipoMovimiento" class="form-input" required>
+                <option value="entrada">Entrada (Añadir al stock)</option>
+                <option value="salida">Salida (Restar del stock)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="cantidad">Cantidad *</label>
+              <input type="number" id="cantidad" [(ngModel)]="formularioStock.cantidad" name="cantidad" min="1" class="form-input" placeholder="1" required>
+            </div>
+          </div>
+        </ng-container>
+
+        <div class="form-acciones">
+          <button type="submit" class="btn btn-primary">
+            {{ modo === 'stock' ? 'Confirmar Actualización' : 'Guardar Repuesto' }}
+          </button>
+          <button type="button" class="btn btn-secondary" (click)="cancelar()">
+            Cancelar
+          </button>
+        </div>
+        
+      </form>
+    </div>
+  </main>
+</div>
