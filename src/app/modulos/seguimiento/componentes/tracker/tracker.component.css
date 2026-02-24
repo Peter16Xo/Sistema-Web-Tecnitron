@@ -76,3 +76,18 @@
   .step { width: 100%; flex-direction: row; margin-bottom: 20px; }
   .step-circle { margin-bottom: 0; margin-right: 15px; }
 }
+
+/*fecha de cada paso en el stepper*/
+.step-date {
+  font-size: 11px;
+  color: #888;
+  margin-top: 5px;
+  font-weight: 500;
+  background: #f8f9fa;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.step.active .step-date {
+  color: #28a745;
+  background: #e8f5e9;
+}

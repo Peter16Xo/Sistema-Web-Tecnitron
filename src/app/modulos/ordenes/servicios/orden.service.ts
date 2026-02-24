@@ -1,6 +1,6 @@
 /**
  * SERVICIO: Órdenes de Trabajo
- * Descripción: Gestión del ciclo de vida de una reparación con almacenamiento persistente.
+ * Descripción: Gestión del ciclo de vida de una reparación con almacenamiento persistente y bitácora de estados.
  * Fecha: 2026
  */
 import { Injectable } from '@angular/core';
@@ -84,6 +84,10 @@ export class OrdenServicio {
       total: 0,
       fechaRecepcion: new Date(),
       fechaActualizacion: new Date(),
+      
+      // NUEVO: Al crear la orden, registramos el primer estado en la bitácora
+      historialEstados: [{ estado: 'Recibido', fecha: new Date() }]
+      
     } as OrdenTrabajo;
 
     this.ordenesDB.unshift(ordenCompletada);
@@ -115,6 +119,12 @@ export class OrdenServicio {
       if (nuevoEstado === 'Entregado') {
         this.ordenesDB[index].fechaEntrega = new Date();
       }
+
+      // NUEVO: Agregamos a la bitácora la fecha exacta en la que llegó a este nuevo estado
+      if (!this.ordenesDB[index].historialEstados) {
+        this.ordenesDB[index].historialEstados = []; // Asegurarnos de que existe el arreglo
+      }
+      this.ordenesDB[index].historialEstados.push({ estado: nuevoEstado, fecha: new Date() });
 
       this.guardarDB(); // Guardar cambio de estado
       this.notificacionServicio.enviarNotificacionEstado(this.ordenesDB[index]);

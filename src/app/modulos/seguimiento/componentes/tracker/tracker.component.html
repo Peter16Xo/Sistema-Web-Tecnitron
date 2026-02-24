@@ -53,6 +53,11 @@
             <span *ngIf="i > obtenerIndicePasoActual()">{{ i + 1 }}</span>
           </div>
           <div class="step-title">{{ paso }}</div>
+          
+          <div class="step-date" *ngIf="i <= obtenerIndicePasoActual() && obtenerFechaPaso(paso)">
+            {{ obtenerFechaPaso(paso) | date:'dd/MMM HH:mm' }}
+          </div>
+          
         </div>
       </div>
 

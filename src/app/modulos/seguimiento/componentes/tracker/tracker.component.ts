@@ -72,4 +72,11 @@ export class TrackerComponent implements OnInit {
     
     return this.pasosFlujo.indexOf(this.ordenEncontrada.estado);
   }
+  // NUEVO: Busca en la bitácora si ese paso ya tiene una fecha registrada
+  obtenerFechaPaso(paso: string): Date | null {
+    if (!this.ordenEncontrada || !this.ordenEncontrada.historialEstados) return null;
+    
+    const registro = this.ordenEncontrada.historialEstados.find(h => h.estado === paso);
+    return registro ? registro.fecha : null;
+  }
 }

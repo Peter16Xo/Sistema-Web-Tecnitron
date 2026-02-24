@@ -46,6 +46,7 @@ export interface OrdenTrabajo {
   equipo: Equipo;
   diagnostico: DiagnosticoTecnico;
   items: ItemOrden[];
+  historialEstados?: HistorialEstado[];
   
   estado: EstadoOrden;
   
@@ -56,4 +57,47 @@ export interface OrdenTrabajo {
   subtotal: number;
   iva: number;
   total: number;
+}
+
+
+// NUEVA INTERFAZ PARA LA BITÁCORA
+export interface HistorialEstado {
+  estado: EstadoOrden;
+  fecha: Date;
+}
+
+export interface OrdenTrabajo {
+  id: string;
+  codigo: string;             
+  codigoSeguimiento?: string; 
+  
+  clienteId: string;
+  clienteNombre?: string; 
+  clienteCedula?: string;
+  clienteEmail?: string;      
+  
+  tecnicoId?: string;
+  tecnicoNombre?: string;
+  
+  equipo: Equipo;
+  diagnostico: DiagnosticoTecnico;
+  items: ItemOrden[];
+  
+  estado: EstadoOrden;
+  
+  fechaRecepcion: Date;
+  fechaActualizacion: Date;
+  fechaEntrega?: Date;
+
+  // NUEVO: Arreglo que guardará la fecha exacta de cada paso
+  historialEstados?: HistorialEstado[]; 
+  
+  subtotal: number;
+  iva: number;
+  total: number;
+}
+
+export interface HistorialEstado {
+  estado: EstadoOrden;
+  fecha: Date;
 }

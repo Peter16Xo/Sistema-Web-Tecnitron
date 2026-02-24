@@ -23,6 +23,11 @@
         </span>
         <p><strong>Fecha de Ingreso:</strong> {{ orden.fechaRecepcion | date:'dd/MM/yyyy HH:mm' }}</p>
         <p *ngIf="orden.fechaEntrega"><strong>Fecha de Entrega:</strong> {{ orden.fechaEntrega | date:'dd/MM/yyyy' }}</p>
+        
+        <div *ngIf="orden.codigoSeguimiento" style="margin-top: 15px; padding: 10px; background-color: #f0f4f8; border: 1px dashed #1e3c72; border-radius: 6px; text-align: right;">
+          <p style="margin: 0; font-size: 12px; color: #666; text-transform: uppercase; font-weight: bold;">Código para Rastreo Web:</p>
+          <p style="margin: 5px 0 0 0; font-family: monospace; font-size: 16px; font-weight: bold; color: #1e3c72;">{{ orden.codigoSeguimiento }}</p>
+        </div>
       </div>
     </header>
 
@@ -101,7 +106,8 @@
 
     <footer class="doc-footer">
       <p>Este documento es una pre-factura y comprobante de estado de equipo.</p>
-      <p>¡Gracias por confiar en TECNITRON!</p>
+      <p>Puedes rastrear el estado de tu equipo ingresando tu <strong>Código de Rastreo Web</strong> en nuestro portal: <br> <strong>www.tecnitron.com/tracker</strong></p>
+      <p style="margin-top: 10px;">¡Gracias por confiar en TECNITRON!</p>
     </footer>
 
   </main>
