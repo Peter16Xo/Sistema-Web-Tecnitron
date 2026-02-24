@@ -29,29 +29,30 @@ export interface ItemOrden {
   subtotal: number;
 }
 
+
 export interface OrdenTrabajo {
   id: string;
-  codigo: string;         // Ej. ORD-0001 (Para que el cliente lo rastree)
-  clienteId: string;      // Relación con el cliente
+  codigo: string;             // Ej. ORD-0001 (Para control interno)
+  codigoSeguimiento?: string; // NUEVO: Ej. OD-059-21552270725752 (Para el Tracker público)
   
-  // Relaciones opcionales (se llenan al consultar la orden completa)
+  clienteId: string;
   clienteNombre?: string; 
   clienteCedula?: string;
+  clienteEmail?: string;      // NUEVO: Para saber a dónde enviar el correo automático
   
-  tecnicoId?: string;     // ID del técnico asignado (opcional al inicio)
+  tecnicoId?: string;
   tecnicoNombre?: string;
   
   equipo: Equipo;
   diagnostico: DiagnosticoTecnico;
-  items: ItemOrden[];     // Repuestos y servicios aplicados
+  items: ItemOrden[];
   
   estado: EstadoOrden;
   
   fechaRecepcion: Date;
   fechaActualizacion: Date;
-  fechaEntrega?: Date;    // Solo cuando se entrega al cliente
+  fechaEntrega?: Date;
   
-  // Totales de la pre-factura
   subtotal: number;
   iva: number;
   total: number;

@@ -1,0 +1,78 @@
+<div class="tracker-page">
+  <header class="public-header">
+    <div class="header-logo">
+      <h2>TECNITRON</h2>
+      <span>| Rastreo Público</span>
+    </div>
+  </header>
+
+  <main class="tracker-container">
+    
+    <div class="search-card">
+      <h1>Rastrea tu Reparación</h1>
+      <p>Ingresa el código de seguimiento de tu equipo (Ej. OD-123-4567890)</p>
+      
+      <div class="search-box">
+        <input 
+          type="text" 
+          placeholder="Ingresa tu código de rastreo aquí..." 
+          [(ngModel)]="codigoBuscado"
+          (keyup.enter)="buscarOrden()"
+        >
+        <button (click)="buscarOrden()" [disabled]="buscando || !codigoBuscado">
+          {{ buscando ? 'Buscando...' : 'Rastrear Equipo' }}
+        </button>
+      </div>
+
+      <div *ngIf="mensajeError" class="alert alert-error">
+        {{ mensajeError }}
+      </div>
+    </div>
+
+    <div class="result-card" *ngIf="ordenEncontrada">
+      
+      <div class="order-info-header">
+        <div class="order-title">
+          <h2>{{ ordenEncontrada.equipo.tipo }} {{ ordenEncontrada.equipo.marca }} {{ ordenEncontrada.equipo.modelo }}</h2>
+          <span class="badge" [ngClass]="'badge-' + ordenEncontrada.estado.toLowerCase().replace(' ', '-')">
+            {{ ordenEncontrada.estado }}
+          </span>
+        </div>
+        <p><strong>Cliente:</strong> {{ ordenEncontrada.clienteNombre }}</p>
+        <p><strong>Falla Inicial:</strong> {{ ordenEncontrada.diagnostico.fallaReportada }}</p>
+      </div>
+
+      <hr class="divider">
+
+      <div class="stepper-wrapper" *ngIf="ordenEncontrada.estado !== 'Cancelado'">
+        <div class="step" 
+             *ngFor="let paso of pasosFlujo; let i = index" 
+             [ngClass]="{'active': i <= obtenerIndicePasoActual()}">
+          <div class="step-circle">
+            <span *ngIf="i <= obtenerIndicePasoActual()">✓</span>
+            <span *ngIf="i > obtenerIndicePasoActual()">{{ i + 1 }}</span>
+          </div>
+          <div class="step-title">{{ paso }}</div>
+        </div>
+      </div>
+
+      <div class="cancelado-box" *ngIf="ordenEncontrada.estado === 'Cancelado'">
+        <h3>🚫 Reparación Cancelada</h3>
+        <p>El presupuesto de esta reparación no fue aprobado o fue cancelado. Por favor, acércate a la sucursal para retirar tu equipo.</p>
+      </div>
+
+      <div class="success-box" *ngIf="ordenEncontrada.estado === 'Listo'">
+        <h3>🎉 ¡Tu equipo está reparado y listo!</h3>
+        <p>Puedes acercarte a nuestra sucursal para realizar el pago y retirar tu equipo.</p>
+        <p class="price-alert">Total a Pagar: <strong>${{ ordenEncontrada.total | number:'1.2-2' }}</strong></p>
+      </div>
+
+      <div class="success-box entregado-box" *ngIf="ordenEncontrada.estado === 'Entregado'">
+        <h3>✅ Equipo Entregado</h3>
+        <p>Esta orden ha sido finalizada. ¡Gracias por confiar en TECNITRON!</p>
+      </div>
+
+    </div>
+
+  </main>
+</div>

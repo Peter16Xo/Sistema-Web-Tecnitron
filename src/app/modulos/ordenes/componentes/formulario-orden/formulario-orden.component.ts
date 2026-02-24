@@ -83,6 +83,7 @@ export class FormularioOrdenComponent implements OnInit, OnDestroy {
       clienteId: this.formulario.clienteId,
       clienteNombre: clienteSeleccionado ? `${clienteSeleccionado.nombre} ${clienteSeleccionado.apellido}` : 'Cliente Desconocido',
       clienteCedula: clienteSeleccionado ? clienteSeleccionado.cedula : '',
+      clienteEmail: clienteSeleccionado ? clienteSeleccionado.email : '', // <--- CAMBIO AÑADIDO AQUÍ
       equipo: { ...this.formulario.equipo },
       diagnostico: { ...this.formulario.diagnostico }
     };

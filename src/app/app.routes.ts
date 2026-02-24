@@ -24,6 +24,7 @@ import { FormularioOrdenComponent } from './modulos/ordenes/componentes/formular
 import { DetalleOrdenComponent } from './modulos/ordenes/componentes/detalle-orden/detalle-orden.component';
 import { DiagnosticoTecnicoComponent } from './modulos/ordenes/componentes/diagnostico-tecnico/diagnostico-tecnico.component';
 import { ordenesGuard } from './modulos/ordenes/guards/ordenes.guard'; // Tu nuevo guard
+import { TrackerComponent } from './modulos/seguimiento/componentes/tracker/tracker.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent, data: { title: 'Iniciar Sesión' } },
@@ -74,6 +75,10 @@ export const routes: Routes = [
     ]
   },
 
+  // --- RUTAS PÚBLICAS (TRACKER) ---
+  { path: 'tracker', component: TrackerComponent, data: { title: 'Rastreo de Equipo' } },
+  { path: 'tracker/:codigo', component: TrackerComponent, data: { title: 'Rastreo de Equipo' } },
+  
   { path: '', redirectTo: '/dashboard', pathMatch: 'full' },
   { path: '**', redirectTo: '/dashboard' }
 ];
